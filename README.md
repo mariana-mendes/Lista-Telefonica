@@ -6,7 +6,7 @@ Funcionalidades:
 <ul>
 <li>Adicionar contato. </li>
 <li>Excluir contato.</li>
-<li>Editar contato. (Modificar nome, número, marcação de favorito ou grupo ao qual pertence).<li>
+<li>Editar contato. (Modificar nome, número, marcação de favorito ou grupo ao qual pertence).</li>
 <li>Agrupar (família, amigos, trabalho, etc).</li>
 <li>Ordenar por nome.</li>
 <li> Adicionar aos favoritos. (Os contatos também podem ser tornados favoritos automaticamente dependendo da frequência com que ele é chamado).</li>
