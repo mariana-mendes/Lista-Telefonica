@@ -3,55 +3,63 @@
 
 using namespace std;
 
-map <string,int> contatos;
-vector<string> contatosAuxiliar;
 
+
+struct Contato{
+	string nome;
+	int numero;
+	bool favorito;
+	bool bloqueado;
+	int contaChamadas;
+	vector<string> grupos;
+};
+
+vector<Contato> contatos;
+
+Contato criaContato(string nome, int numero){
+	Contato contato;
+	contato.nome=nome;
+	contato.numero = numero;
+	contato.favorito = 0;
+	contato.bloqueado = 0;
+	contato.contaChamadas = 0;
+	
+	return contato;
+};
 
 void printMenu(){
     printf("%s\n","------ Lista Telefonica topzera ------");
     printf("%s\n", "Opções: ");
     printf("%s\n","1. Adicionar contato.");
-	  printf("%s\n","2. Excluir contato.");
-}
-
-void addContato(string nome,  int numero){
-  contatosAuxiliar.push_back(nome);
-  contatos.insert(pair <string,  int> (nome, numero));
+	printf("%s\n","2. Excluir contato.");
+	cout << "Digite sua opção: ";
 };
 
 
-void listContatos(){
-	for(int i = 0; i < contatosAuxiliar.size() ; i++){
-		cout << contatosAuxiliar.at(i) << endl;
-		printf("%d\n", contatos[contatosAuxiliar[i]]);
-		
-	};
-  
-}
+void addContato(){
+	string nome;
+	int numero;
+	Contato novoContato;
+	cout << "Nome do contato: ";
+	cin >> nome;
+	cout << "Numero do contato: ";
+	cin>> numero;
+	novoContato = criaContato(nome, numero);
+	contatos.push_back(novoContato);
+};
 
 
-int main(){
+int main(){	
   printMenu();
   int opcao;
-  string nome;
-  int numero;
-  cout << "Digite sua opção: ";
   scanf("%d",&opcao);
   
   if(opcao == 1){
-    cout << "Nome do contato: ";
-    cin >> nome;
-    cout << "Numero do contato: ";
-    scanf( "%d",&numero);
-    addContato(nome,numero);
-    
-  };
-  
-  listContatos();
-    
+	  addContato();
+	  cout<< "Contato adicionado com sucesso!"<< endl;
+   };
 
-return 0;
-	}
+}
 	
 	
 	
