@@ -1,9 +1,8 @@
 # include <bits/stdc++.h>
 # include <map>
+#include <algorithm>
 
 using namespace std;
-
-
 
 struct Contato{
 	string nome;
@@ -32,6 +31,7 @@ void printMenu(){
     printf("%s\n", "Opções: ");
     printf("%s\n","1. Adicionar contato.");
 	printf("%s\n","2. Excluir contato.");
+	printf("%s\n","3. Listar contatos.");
 	cout << "Digite sua opção: ";
 };
 
@@ -49,16 +49,50 @@ void addContato(){
 };
 
 
+void deleteContato(){
+	cout<< "Nome do contato: "<<endl;
+	string nome;
+	cin >> nome;
+	for(int i = 0; i < contatos.size(); i++){
+			if(contatos.at(i).nome == nome){
+				contatos.erase(contatos.begin()+ i);
+				break;
+			};
+	}
+	
+	
+}
+
+
+void listaContatos(){
+	for(int i = 0; i < contatos.size() ; i++){
+		cout << "Nome: " <<contatos.at(i).nome << endl;
+	};
+  
+}
+
+
 int main(){	
   printMenu();
   int opcao;
   scanf("%d",&opcao);
   
-  if(opcao == 1){
-	  addContato();
-	  cout<< "Contato adicionado com sucesso!"<< endl;
-   };
+  
+  switch(opcao){
+	  case 1:
+		addContato();
+		cout<< "Contato adicionado com sucesso!"<< endl;
+		break;
+	  case 2:
+		deleteContato();
+		cout << "Excluído com sucesso!" <<endl;
+	  case 3:
+		cout << "Todos os contatos: " << endl;
+		listaContatos(); 
 
+  
+ 
+};
 }
 	
 	
