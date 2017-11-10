@@ -33,6 +33,7 @@ void printMenu(){
 	printf("%s\n","2. Excluir contato.");
 	printf("%s\n","3. Listar contatos.");
 	printf("%s\n","4. Editar contato.");
+	printf("%s\n","5. Busca contato.");
 	cout << "Digite sua opção: ";
 };
 
@@ -103,6 +104,7 @@ Contato editarContato(Contato contato){
 		 };
 	return contato;
 };
+
 void procuraContato(){
 	cout<< "Nome do contato:";
 	string nome; 
@@ -113,35 +115,69 @@ void procuraContato(){
 			 contato = editarContato(contatos.at(i));
 			 contatos.at(i).numero = contato.numero;
 			 contatos.at(i).nome = contato.nome;
-			 cout << "Contato editado com sucesso!"<< endl;
+			 cout << "\nContato editado com sucesso!\n"<< endl;
 			return;
 			};
 	};
-	cout << "Não foi possível encontrar o contato."<< endl;
+	cout << "\nNão foi possível encontrar o contato.\n"<< endl;
 	
+};
+
+void buscaContato(){
+	cout << "Nome do contato:";
+	string nome;
+	cin >> nome;
+	Contato contato;
+	bool achou = false;
+	
+	for (int i = 0; i < contatos.size() ; i++) {
+		if (contatos.at(i).nome == nome) {
+			contato = contatos.at(i);
+			achou = true;
+		}
+	}
+	
+	if  (achou == true){
+		cout << "Nome: " <<contato.nome << endl;
+		cout << "Número: " <<contato.numero << endl;
+	} else {
+		cout << "\nContato não encontrado.\n";
+	}
+
 };
 
 
 int main(){	
-  while (true){
-	 printMenu();
-	int opcao;
-	scanf("%d",&opcao);
-	  switch(opcao){
-		  case 1:
+
+	printMenu();
+	string opcao;
+	cin >> opcao;
+	switch(opcao[0]){
+		  case '1':
 			addContato();
-			cout<< "Contato adicionado com sucesso!"<< endl;
+			cout<< "\nContato adicionado com sucesso!\n"<< endl;
 			break;
-		  case 2:
+		  case '2':
 			deleteContato();
-			cout << "Excluído com sucesso!" <<endl;
-		  case 3:
-			cout << "Todos os contatos: " << endl;
-			listaContatos(); 
-		  case 4:
+			cout << "\nExcluído com sucesso!\n" <<endl;
+			break;
+		  case '3':
+			cout << "\nTodos os contatos: " << endl;
+			listaContatos();
+			break;
+		  case '4':
 			procuraContato();
-	};		
-};
+			break;
+		  case '5':
+			buscaContato();
+			break;
+		  default:
+		    cout << "\nOpção Inválida\n" << endl;
+		    break;
+		
+     }; 
+			  
+     main();
 }
 	
 	
