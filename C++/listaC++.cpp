@@ -32,10 +32,19 @@ void printMenu(){
     printf("%s\n","1. Adicionar contato.");
 	printf("%s\n","2. Excluir contato.");
 	printf("%s\n","3. Listar contatos.");
-	printf("%s\n","4. Editar contato.");
-	printf("%s\n","5. Busca contato.");
+	printf("%s\n","4. Busca contato.");
 	cout << "Digite sua opção: ";
 };
+
+void printMenuContato(){
+	printf("%s\n","------ Opcões contato ------");
+    printf("%s\n", "Opções: ");
+    printf("%s\n","1. Editar Contato");
+    printf("%s\n","2. Chamar");
+    printf("%s\n","3. Adcionar aos Favoritos");
+    printf("%s\n","4. Adicionar à Grupo");
+
+}
 
 void printMenuEditarContato(){
     printf("%s\n","------   contato  ------");
@@ -58,8 +67,6 @@ void addContato(){
 	novoContato = criaContato(nome, numero);
 	contatos.push_back(novoContato);
 };
-
-
 void deleteContato(){
 	cout<< "Nome do contato: "<<endl;
 	string nome;
@@ -74,18 +81,7 @@ void deleteContato(){
 	
 }
 
-
-void listaContatos(){
-	for(int i = 0; i < contatos.size() ; i++){
-		cout << "Nome: " <<contatos.at(i).nome << endl;
-		cout << "Número: " <<contatos.at(i).numero << endl;
-	};
-  
-}
-
-
-
-Contato editarContato(Contato contato){
+Contato menuEdicao(Contato contato){
 	printMenuEditarContato();
 	int opcao,numero;
 	string nomes;
@@ -105,14 +101,11 @@ Contato editarContato(Contato contato){
 	return contato;
 };
 
-void procuraContato(){
-	cout<< "Nome do contato:";
-	string nome; 
-	cin >> nome;
+void editarContato(Contato contatoRecebido){
 	Contato contato;
 	for(int i = 0; i < contatos.size() ; i++){
-		if(contatos.at(i).nome == nome){
-			 contato = editarContato(contatos.at(i));
+		if(contatos.at(i).nome == contatoRecebido.nome){
+			 contato = menuEdicao(contatos.at(i));
 			 contatos.at(i).numero = contato.numero;
 			 contatos.at(i).nome = contato.nome;
 			 cout << "\nContato editado com sucesso!\n"<< endl;
@@ -121,7 +114,54 @@ void procuraContato(){
 	};
 	cout << "\nNão foi possível encontrar o contato.\n"<< endl;
 	
+};	
+void listaContatos(){
+	for(int i = 0; i < contatos.size() ; i++){
+		cout << "Nome: " <<contatos.at(i).nome << endl;
+		cout << "Número: " <<contatos.at(i).numero << endl;
+	};
+  
+}
+void chamarContato(Contato contato){
+	for (int i = 0; i < contatos.size() ; i++) {
+		if (contatos.at(i).nome == contato.nome) {
+			contatos.at(i).contaChamadas++;
+		}
+	}
 };
+void adiconarFavoritos(Contato contato){
+	
+};
+
+void adicionarGrupos(Contato contato){
+
+};
+
+void menuContato(Contato contato){
+	string opcao;
+	
+	cout << "Digite uma opção:";
+	cin >> opcao;
+	switch(opcao[0]){
+		  case '1':
+			editarContato(contato);
+			break;
+		  case '2':
+			chamarContato(contato);
+			break;
+		  case '3':
+			adiconarFavoritos(contato);
+			break;
+		  case '4':
+			adicionarGrupos(contato);
+			break;
+		  default:
+		    cout << "\nOpção Inválida\n" << endl;
+		    break;
+		
+};	
+};	
+
 
 void buscaContato(){
 	cout << "Nome do contato:";
@@ -140,6 +180,9 @@ void buscaContato(){
 	if  (achou == true){
 		cout << "Nome: " <<contato.nome << endl;
 		cout << "Número: " <<contato.numero << endl;
+		printMenuContato();
+		menuContato(contato);
+		
 	} else {
 		cout << "\nContato não encontrado.\n";
 	}
@@ -166,9 +209,6 @@ int main(){
 			listaContatos();
 			break;
 		  case '4':
-			procuraContato();
-			break;
-		  case '5':
 			buscaContato();
 			break;
 		  default:
