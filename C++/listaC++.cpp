@@ -1,21 +1,21 @@
 # include <bits/stdc++.h>
 # include <map>
 #include <algorithm>
-
+#include <typeinfo>
 using namespace std;
+
 
 struct Contato{
 	string nome;
-	int numero;
+	string numero;
 	bool favorito;
 	bool bloqueado;
 	int contaChamadas;
 	vector<string> grupos;
 };
-
 vector<Contato> contatos;
 
-Contato criaContato(string nome, int numero){
+Contato criaContato(string nome, string numero){
 	Contato contato;
 	contato.nome=nome;
 	contato.numero = numero;
@@ -43,7 +43,6 @@ void printMenuContato(){
     printf("%s\n","2. Chamar");
     printf("%s\n","3. Adcionar aos Favoritos");
     printf("%s\n","4. Adicionar à Grupo");
-
 }
 
 void printMenuEditarContato(){
@@ -55,10 +54,9 @@ void printMenuEditarContato(){
 	cout << "Digite sua opção: ";
 };
 
-
 void addContato(){
 	string nome;
-	int numero;
+	string numero;
 	Contato novoContato;
 	cout << "Nome do contato: ";
 	cin >> nome;
@@ -67,10 +65,12 @@ void addContato(){
 	novoContato = criaContato(nome, numero);
 	contatos.push_back(novoContato);
 };
+
 void deleteContato(){
 	cout<< "Nome do contato: "<<endl;
 	string nome;
 	cin >> nome;
+	
 	for(int i = 0; i < contatos.size(); i++){
 			if(contatos.at(i).nome == nome){
 				contatos.erase(contatos.begin()+ i);
@@ -129,9 +129,7 @@ void chamarContato(Contato contato){
 		}
 	}
 };
-void adiconarFavoritos(Contato contato){
-	
-};
+
 
 void adicionarGrupos(Contato contato){
 
@@ -150,7 +148,7 @@ void menuContato(Contato contato){
 			chamarContato(contato);
 			break;
 		  case '3':
-			adiconarFavoritos(contato);
+			//Adicionar aos favoritos
 			break;
 		  case '4':
 			adicionarGrupos(contato);
@@ -162,11 +160,7 @@ void menuContato(Contato contato){
 };	
 };	
 
-
-void buscaContato(){
-	cout << "Nome do contato:";
-	string nome;
-	cin >> nome;
+void buscaContato(string &nome){
 	Contato contato;
 	bool achou = false;
 	
@@ -174,10 +168,11 @@ void buscaContato(){
 		if (contatos.at(i).nome == nome) {
 			contato = contatos.at(i);
 			achou = true;
+			break;
 		}
 	}
 	
-	if  (achou == true){
+	if(achou){
 		cout << "Nome: " <<contato.nome << endl;
 		cout << "Número: " <<contato.numero << endl;
 		printMenuContato();
@@ -195,6 +190,7 @@ int main(){
 	printMenu();
 	string opcao;
 	cin >> opcao;
+	string nomeBusca;
 	switch(opcao[0]){
 		  case '1':
 			addContato();
@@ -202,14 +198,16 @@ int main(){
 			break;
 		  case '2':
 			deleteContato();
-			cout << "\nExcluído com sucesso!\n" <<endl;
+			
 			break;
 		  case '3':
 			cout << "\nTodos os contatos: " << endl;
 			listaContatos();
 			break;
 		  case '4':
-			buscaContato();
+			cout << "Nome do contato:";
+			cin >> nomeBusca;
+			buscaContato(nomeBusca);
 			break;
 		  default:
 		    cout << "\nOpção Inválida\n" << endl;
