@@ -2,6 +2,7 @@
 # include <map>
 #include <algorithm>
 #include <typeinfo>
+#include <regex>
 using namespace std;
 
 
@@ -55,15 +56,22 @@ void printMenuEditarContato(){
 };
 
 void addContato(){
+  regex r("\\([[:digit:]]{2}\\)[[:digit:]]{1}-[[:digit:]]{4}-[[:digit:]]{4}");
 	string nome;
 	string numero;
 	Contato novoContato;
 	cout << "Nome do contato: ";
 	cin >> nome;
-	cout << "Numero do contato: ";
+
+	cout << "Numero do contato((xx)x-xxxx-xxxx): ";
 	cin>> numero;
-	novoContato = criaContato(nome, numero);
-	contatos.push_back(novoContato);
+	if (regex_match(numero, r)) {
+	  novoContato = criaContato(nome, numero);
+	  contatos.push_back(novoContato);
+	} else {
+	  cout << "Formato Inválido: Insira dados válidos \n";
+	  addContato();
+	}
 };
 
 void deleteContato(){
