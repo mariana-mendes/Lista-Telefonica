@@ -34,6 +34,7 @@ void printMenu(){
     printf("%s\n","1. Adicionar contato.");
 	printf("%s\n","2. Listar contatos.");
 	printf("%s\n","3. Busca contato.");
+	printf("%s\n", "4. Sair");
 	cout << "Digite sua opção: ";
 };
 
@@ -207,7 +208,7 @@ int main(){
 	string opcao;
 	cin >> opcao;
 	string nomeBusca;
-	switch(opcao[0]){
+	switch(opcao[0] ){
 		  case '1':
 			addContato();
 			cout<< "\nContato adicionado com sucesso!\n"<< endl;
@@ -221,13 +222,17 @@ int main(){
 			cin >> nomeBusca;
 			buscaContato(nomeBusca);
 			break;
+		  case '4':
+		    leave = true;
+		    break;
 		  default:
 		    cout << "\nOpção Inválida\n" << endl;
 		    break;
 		
      }; 
 			  
-     main();
+    if (leave) cout << "Xau, perua" << endl;
+    else main();
 }
 	
 	
