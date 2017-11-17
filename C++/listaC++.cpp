@@ -35,6 +35,7 @@ void printMenu(){
 	printf("%s\n", "2. Listar contatos.");
 	printf("%s\n", "3. Busca contato.");
 	printf("%s\n", "4. Listar por Grupo.");
+	printf("%s\n", "5. Listar contatos ordenados");
 	printf("%s\n", "8. Sair");
 	cout << "Digite sua opção: ";
 };
@@ -142,6 +143,24 @@ Contato menuEdicao(Contato contato){
 	return contato;
 };
 
+void adicionaFavorito(string nome) {
+	int posicaoContato = -1;
+	
+	for(int i = 0; i < contatos.size(); i++) {
+		if (contatos.at(i).nome == nome) {
+			posicaoContato = i;
+			break;
+		}
+	}
+	
+	if (posicaoContato != -1) {
+		contatos.at(posicaoContato).favorito = 1;
+		cout << "Contato adicionado aos favoritos com sucesso!" << endl;
+	} else {
+		cout << "Contato nao existe!" << endl;
+	}
+};
+
 void editarContato(Contato contatoRecebido){
 	Contato contato;
 	for(int i = 0; i < contatos.size() ; i++){
@@ -156,6 +175,27 @@ void editarContato(Contato contatoRecebido){
 	cout << "\nNão foi possível encontrar o contato.\n"<< endl;
 	
 };
+
+bool compareByname(const Contato &a, const Contato &b) {
+	return a.nome < b.nome;
+};
+
+void listaContatosOrdenados() {
+	sort(contatos.begin(), contatos.end(), compareByname);
+
+	for(int i = 0; i < contatos.size() ; i++){
+		Contato contato = contatos.at(i);
+
+		cout << "Nome: " << contato.nome << endl;
+		cout << "Número: " << contato.numero << endl;
+		cout << "Bloqueado? ";
+			if (contato.bloqueado == 0) cout << "Nao" << endl;
+			else cout << "Sim" << endl;
+		cout << "Favoritos? ";
+			if(contato.favorito == 0) cout << "Nao" << endl;
+			else cout << "Sim" << endl;
+	};
+}
 
 /**
 * Atualiza um contato na lista de contatos.
@@ -182,8 +222,20 @@ void listaContatos(){
 		cout << "Nome: " << contato.nome << endl;
 		cout << "Número: " << contato.numero << endl;
 		cout << "Bloqueado? ";
-		if (contato.bloqueado == 0) cout << "Nao" << endl;
-		else cout << "Sim" << endl;
+			if (contato.bloqueado == 0) cout << "Nao" << endl;
+			else cout << "Sim" << endl;
+		cout << "Favoritos? ";
+			if(contato.favorito == 0) cout << "Nao" << endl;
+			else cout << "Sim" << endl;
+		cout << "Grupos: ";
+			if (contato.grupos.size() > 0) {
+				for (int i = 0; i < contato.grupos.size(); i++) {
+					cout << contato.grupos.at(i) << " ";
+				}
+				printf("\n");
+			} else {
+				cout << "Contato não faz parte de nenhum grupo" << endl;
+			}
 	};
   
 }
@@ -252,7 +304,7 @@ void menuContato(Contato contato){
 			chamarContato(contato);
 			break;
 		  case '3':
-			//Adicionar aos favoritos
+			adicionaFavorito(contato.nome);
 			break;
 		  case '4':
 			adicionarGrupos(contato);
@@ -322,6 +374,12 @@ int main(){
 				cin >> nomeBusca;
 				listaPorGrupo(nomeBusca);
 				break;
+
+			case '5':
+				cout << "\nTodos os contatos: " << endl;
+		  		listaContatosOrdenados();
+		  		break;
+
 			case '8':
 		    leave = true;
 		    break;
