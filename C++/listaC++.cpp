@@ -36,7 +36,8 @@ void printMenu(){
 	printf("%s\n", "3. Busca contato.");
 	printf("%s\n", "4. Listar por Grupo.");
 	printf("%s\n", "5. Listar contatos ordenados");
-	printf("%s\n", "8. Sair");
+	printf("%s\n", "6. Chamada de Emergência");
+	printf("%s\n", "7. Sair");
 	cout << "\nDigite sua opção: ";
 };
 
@@ -274,6 +275,27 @@ void adicionarGrupos(Contato contato){
 	cin.ignore();
 };
 
+
+void addEmergencia(){
+	string grupo ="Emergencia";
+	string nome;
+	bool indice = 0;
+	getline(cin, nome);
+	cin.ignore();
+	for(int i= 0; i < contatos.size(); i++){
+			if(contatos.at(i).nome == nome){
+				contatos.at(i).grupos.push_back("Emergencia");
+				indice = 1;
+				break;
+			}
+	}
+	if(!indice){
+			printf("Contato não existe!");
+	}
+	
+
+}
+
 /**
 * Verifica se o contato faz parte de um grupo específico
 * returns {Boolean} true caso o contato esteja nesse grupo.
@@ -351,6 +373,26 @@ void buscaContato(string nome){
 	}
 };
 
+void chamadaDeEmergencia() {
+		cout << "-------Opções------"<< endl;
+		cout <<"1. Listar Contatos de Emergência"<< endl;
+		cout <<"2. Adicionar Contatos de Emergência"<< endl;
+		cout << "Digite uma opção: ";
+		string opcao;
+		cin >> opcao;
+		switch(opcao[0]){
+		  case '1':
+			listaPorGrupo("Emergencia");
+			break;
+		  case '2':
+			addEmergencia();
+			break;
+				
+		  default:
+			break;
+		}
+};
+
 int main(){	
 
 	printMenu();
@@ -384,17 +426,20 @@ int main(){
 				cout << "\nTodos os contatos: " << endl;
 		  		listaContatosOrdenados();
 		  		break;
-
-			case '8':
-		    leave = true;
-		    break;
+		  	case '6':
+				chamadaDeEmergencia();
+				break;
+				
+			case '7':
+				leave = true;
+				break;
 		  default:
 		    cout << "\nOpção Inválida\n" << endl;
 		    break;
 		
      }; 
 			  
-    if (leave) cout << "Xau, perua" << endl;
+    if (leave) cout << "Tchauzinho! c=" << endl;
     else main();
 }
 	
