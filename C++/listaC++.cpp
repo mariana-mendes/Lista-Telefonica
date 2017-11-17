@@ -31,23 +31,23 @@ void printMenu(){
     printf("%s\n","------ Lista Telefonica topzera ------");
     printf("%s\n", "Opções: ");
     printf("%s\n","1. Adicionar contato.");
-	printf("%s\n","2. Excluir contato.");
-	printf("%s\n","3. Listar contatos.");
-	printf("%s\n","4. Busca contato.");
+	printf("%s\n","2. Listar contatos.");
+	printf("%s\n","3. Busca contato.");
 	cout << "Digite sua opção: ";
 };
 
 void printMenuContato(){
-	printf("%s\n","------ Opcões contato ------");
+	printf("%s\n","------ Opcões Contato ------");
     printf("%s\n", "Opções: ");
     printf("%s\n","1. Editar Contato");
     printf("%s\n","2. Chamar");
     printf("%s\n","3. Adcionar aos Favoritos");
     printf("%s\n","4. Adicionar à Grupo");
+    printf("%s\n","5. Excluir contato.");
 }
 
 void printMenuEditarContato(){
-    printf("%s\n","------   contato  ------");
+    printf("%s\n","------   Contato  ------");
     printf("%s\n", "Opções: ");
     printf("%s\n","1. Modificar o nome.");
 	printf("%s\n","2. Modificar o número.");
@@ -57,31 +57,33 @@ void printMenuEditarContato(){
 
 void addContato(){
   regex r("\\([[:digit:]]{2}\\)[[:digit:]]{1}-[[:digit:]]{4}-[[:digit:]]{4}");
+  regex s("\\([[:digit:]]{2}\\)[[:digit:]]{4}-[[:digit:]]{4}");
 	string nome;
 	string numero;
 	Contato novoContato;
 	cout << "Nome do contato: ";
 	cin >> nome;
 
-	cout << "Numero do contato((xx)x-xxxx-xxxx): ";
+	cout << "Numero do contato((xx)x-xxxx-xxxx ou (xx)xxxx-xxxx): ";
 	cin>> numero;
-	if (regex_match(numero, r)) {
+	if (regex_match(numero, r) | regex_match(numero, s)) {
 	  novoContato = criaContato(nome, numero);
 	  contatos.push_back(novoContato);
 	} else {
-	  cout << "Formato Inválido: Insira dados válidos \n";
+	  cout << "\nFormato Inválido: Insira dados válidos \n";
 	  addContato();
 	}
 };
 
 void deleteContato(){
-	cout<< "Nome do contato: "<<endl;
+	cout<< "Para confirmar, digite o nome do contato que deseja excluir: "<<endl;
 	string nome;
 	cin >> nome;
 	
 	for(int i = 0; i < contatos.size(); i++){
 			if(contatos.at(i).nome == nome){
 				contatos.erase(contatos.begin()+ i);
+				cout<< "\nContato deletado com sucesso!\n" <<endl;
 				break;
 			};
 	}
@@ -161,6 +163,9 @@ void menuContato(Contato contato){
 		  case '4':
 			adicionarGrupos(contato);
 			break;
+			case '5':
+			deleteContato();
+			break;
 		  default:
 		    cout << "\nOpção Inválida\n" << endl;
 		    break;
@@ -205,14 +210,10 @@ int main(){
 			cout<< "\nContato adicionado com sucesso!\n"<< endl;
 			break;
 		  case '2':
-			deleteContato();
-			
-			break;
-		  case '3':
 			cout << "\nTodos os contatos: " << endl;
 			listaContatos();
 			break;
-		  case '4':
+		  case '3':
 			cout << "Nome do contato:";
 			cin >> nomeBusca;
 			buscaContato(nomeBusca);
