@@ -34,6 +34,7 @@ void printMenu(){
     printf("%s\n", "1. Adicionar contato.");
 	printf("%s\n", "2. Listar contatos.");
 	printf("%s\n", "3. Busca contato.");
+	printf("%s\n", "4. Listar por Grupo.");
 	printf("%s\n", "8. Sair");
 	cout << "Digite sua opção: ";
 };
@@ -156,6 +157,24 @@ void editarContato(Contato contatoRecebido){
 	
 };
 
+/**
+* Atualiza um contato na lista de contatos.
+**/
+void editarContatoGenerico(Contato contatoRecebido){
+	Contato contato;
+	for(int i = 0; i < contatos.size() ; i++){
+		if(contatos.at(i).nome == contatoRecebido.nome){
+			 contatos.at(i).numero = contatoRecebido.numero;
+			 contatos.at(i).nome = contatoRecebido.nome;
+			 contatos.at(i).grupos = contatoRecebido.grupos;
+			 cout << "\nContato editado com sucesso!\n"<< endl;
+			return;
+			};
+	};
+	cout << "\nNão foi possível encontrar o contato.\n"<< endl;
+	
+};	
+
 void listaContatos(){
 	for(int i = 0; i < contatos.size() ; i++){
 		Contato contato = contatos.at(i);
@@ -178,8 +197,46 @@ void chamarContato(Contato contato){
 
 
 void adicionarGrupos(Contato contato){
+	string grupo;
+	printf("Digite o nome do grupo: (ex: Faculdade, Família): ");
+	cin.ignore();
+	cin >> grupo;
+	contato.grupos.push_back(grupo);
+	editarContatoGenerico(contato);
+	printf("Pronto :)\n");
 
+	// for (int i = 0; i < contatos.size(); ++i) {
+	// 	for(int j = 0; j < contatos.at(i).grupos.size(); ++j){
+	// 		cout << contatos.at(i).grupos.at(j);
+	// 		printf("\n");
+	// 	}
+	// }
+	cin.ignore();
 };
+
+/**
+* Verifica se o contato faz parte de um grupo específico
+* returns {Boolean} true caso o contato esteja nesse grupo.
+**/
+bool isContatoInGrupoEspecifico(Contato contato, string grupo){
+	vector<string> grupos = contato.grupos;
+	for (int i = 0; i < contato.grupos.size(); ++i) {
+		if(contato.grupos.at(i).compare(grupo) == 0) return true;
+	}
+	return false;
+}
+
+/**
+*	Filtra a lista de contatos para aqueles que estão em um grupo específico.
+*/
+void listaPorGrupo(string nomeGrupo){
+	for(int i = 0; i < contatos.size() ; i++){
+		if (isContatoInGrupoEspecifico(contatos.at(i), nomeGrupo)){
+			cout << "Nome: " <<contatos.at(i).nome << endl;
+			cout << "Número: " <<contatos.at(i).numero << endl;
+		}
+	};
+}
 
 void menuContato(Contato contato){
 	string opcao;
@@ -259,7 +316,13 @@ int main(){
 			getline(cin, nomeBusca);
 			buscaContato(nomeBusca);
 			break;	
-		  case '8':
+			
+			case '4':
+				cout << "Nome do grupo:";
+				cin >> nomeBusca;
+				listaPorGrupo(nomeBusca);
+				break;
+			case '8':
 		    leave = true;
 		    break;
 		  default:
