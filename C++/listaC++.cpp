@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <typeinfo>
 #include <regex>
+
 using namespace std;
 
 
@@ -62,7 +63,8 @@ void addContato(){
 	string numero;
 	Contato novoContato;
 	cout << "Nome do contato: ";
-	cin >> nome;
+	cin.ignore();
+	getline(std::cin, nome);
 
 	cout << "Numero do contato((xx)x-xxxx-xxxx ou (xx)xxxx-xxxx): ";
 	cin>> numero;
@@ -201,6 +203,7 @@ void buscaContato(string &nome){
 int main(){	
 
 	printMenu();
+	bool leave = false;
 	string opcao;
 	cin >> opcao;
 	string nomeBusca;
