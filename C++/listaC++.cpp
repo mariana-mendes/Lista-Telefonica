@@ -29,7 +29,7 @@ Contato criaContato(string nome, string numero){
 };
 
 void printMenu(){
-    printf("%s\n","------ Lista Telefonica topzera ------");
+    printf("%s\n","\n------ Lista Telefonica ------");
     printf("%s\n", "Opções: ");
     printf("%s\n", "1. Adicionar contato.");
 	printf("%s\n", "2. Listar contatos.");
@@ -37,7 +37,7 @@ void printMenu(){
 	printf("%s\n", "4. Listar por Grupo.");
 	printf("%s\n", "5. Listar contatos ordenados");
 	printf("%s\n", "8. Sair");
-	cout << "Digite sua opção: ";
+	cout << "\nDigite sua opção: ";
 };
 
 void printMenuContato(){
@@ -155,9 +155,9 @@ void adicionaFavorito(string nome) {
 	
 	if (posicaoContato != -1) {
 		contatos.at(posicaoContato).favorito = 1;
-		cout << "Contato adicionado aos favoritos com sucesso!" << endl;
+		cout << "\nContato adicionado aos favoritos com sucesso!" << endl;
 	} else {
-		cout << "Contato nao existe!" << endl;
+		cout << "\nContato nao existe!" << endl;
 	}
 };
 
@@ -219,7 +219,7 @@ void listaContatos(){
 	for(int i = 0; i < contatos.size() ; i++){
 		Contato contato = contatos.at(i);
 
-		cout << "Nome: " << contato.nome << endl;
+		cout << "\nNome: " << contato.nome << endl;
 		cout << "Número: " << contato.numero << endl;
 		cout << "Bloqueado? ";
 			if (contato.bloqueado == 0) cout << "Nao" << endl;
@@ -245,6 +245,10 @@ void chamarContato(Contato contato){
 			contatos.at(i).contaChamadas++;
 		}
 	}
+	
+	if(contato.contaChamadas >= 5){
+	  adicionaFavorito(contato.nome);
+	}
 };
 
 
@@ -256,13 +260,6 @@ void adicionarGrupos(Contato contato){
 	contato.grupos.push_back(grupo);
 	editarContatoGenerico(contato);
 	printf("Pronto :)\n");
-
-	// for (int i = 0; i < contatos.size(); ++i) {
-	// 	for(int j = 0; j < contatos.at(i).grupos.size(); ++j){
-	// 		cout << contatos.at(i).grupos.at(j);
-	// 		printf("\n");
-	// 	}
-	// }
 	cin.ignore();
 };
 
@@ -295,7 +292,6 @@ void menuContato(Contato contato){
 	
 	cout << "Digite uma opção: ";
 	cin >> opcao;
-	string nomeContato;
 	switch(opcao[0]){
 		  case '1':
 			editarContato(contato);
@@ -313,9 +309,7 @@ void menuContato(Contato contato){
 			deleteContato();
 			break;
 		  case '6':
-		  	cout << "Nome contato: ";
-		  	cin >> nomeContato;
-		  	bloqueiaContato(nomeContato);
+		  	bloqueiaContato(contato.nome);
 		  	break;
 		  default:
 		    cout << "\nOpção Inválida\n" << endl;
@@ -389,7 +383,7 @@ int main(){
 		
      }; 
 			  
-    if (leave) cout << "Xau, perua" << endl;
+    if (leave) cout << "Tchau *-*" << endl;
     else main();
 }
 	
