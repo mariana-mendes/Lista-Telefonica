@@ -48,7 +48,7 @@ void printMenuContato(){
     printf("%s\n", "3. Adcionar aos Favoritos");
     printf("%s\n", "4. Adicionar à Grupo");
     printf("%s\n", "5. Excluir contato.");
-    printf("%s\n", "6. Bloquear contato");
+    printf("%s\n", "6. Bloquear/Desbloquear contato");
 }
 
 void printMenuEditarContato(){
@@ -108,15 +108,26 @@ void bloqueiaContato(string nome) {
 
 	if (posicaoContato != -1) {
 		string confirmaContato;
-		cout << "Para confirmar, digite o nome do contato que deseja bloquear: ";
+		cout << "Para confirmar, digite o nome do contato que deseja bloquear/desbloquear: ";
 		cin.ignore();
 		getline(cin, confirmaContato);
 
 		if (confirmaContato == nome) {
-			contatos.at(posicaoContato).bloqueado = 1;
+
+			if(contatos.at(posicaoContato).bloqueado == 1){
+			    contatos.at(posicaoContato).bloqueado = 0;
+			    cout << "\n" << endl;
+			  	cout << "Contato desbloqueado com sucesso!" << endl;
+			}else{
+			  contatos.at(posicaoContato).bloqueado =1;
+			  cout << "\n" << endl;
+			  cout << "Contato bloqueado com sucesso!" << endl;
+			}
 			cout << "\n" << endl;
-			cout << "Contato bloqueado com sucesso!" << endl;
+		
 		}
+	
+	
 
 	} else {
 		cout << "Contato nao existe!" << endl;
@@ -383,7 +394,7 @@ int main(){
 		
      }; 
 			  
-    if (leave) cout << "Tchau *-*" << endl;
+    if (leave) cout << "Xau, perua" << endl;
     else main();
 }
 	
