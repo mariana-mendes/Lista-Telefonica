@@ -12,39 +12,39 @@ printMenu = do
 	print "7. Sair"
 	print "Digite sua opção: "
 
-adicionaContato:: IO()
+adicionaContato:: [Int]
 adicionaContato = do
-	print "precisa fazer"
+	[]
 
-listaContato:: IO()
+listaContato::[Int]
 listaContato = do
-	print "precisa fazer"
+	[]
 
-buscaContato:: IO()
+buscaContato:: [Int]
 buscaContato = do
-	print "precisa fazer"
+	[]
 
-listaGrupo:: IO()
+listaGrupo:: [Int]
 listaGrupo = do
-	print "precisa fazer"
+	[]
 
-chamadaEmergencia:: IO()
+chamadaEmergencia:: [Int]
 chamadaEmergencia = do
-	print "precisa fazer"
+	[]
 
-listaContatosOrdenados:: IO()
+listaContatosOrdenados::[Int]
 listaContatosOrdenados = do
-	print "precisa fazer"
+	[]
 	
-sair:: IO()
+sair:: [Int]
 sair = do
-	print "precisa fazer"
+	[]
 
-opcaoInvalida:: IO()
+opcaoInvalida:: [Int]
 opcaoInvalida = do
-	print "precisa fazer"	
+	[]	
 
-acoesMenu:: String -> IO()
+acoesMenu:: String -> [Int]
 acoesMenu opcao
 	|opcao == "1" = adicionaContato 
 	|opcao == "2" = listaContato 
@@ -54,11 +54,15 @@ acoesMenu opcao
 	|opcao == "6" = chamadaEmergencia
 	|opcao == "7" = sair
 	|otherwise = opcaoInvalida
+	
+escolheAcoes::[Int] -> IO()	
+escolheAcoes array = do
+	printMenu
+	opcao <- getLine
+	let resposta = acoesMenu opcao
+	escolheAcoes resposta
 main::IO()
 main = do
 	print "----- Lista Telefonica -----"
-	printMenu
-	opcao <- getLine
-	acoesMenu opcao
-	main 
+	escolheAcoes [] 
 	
