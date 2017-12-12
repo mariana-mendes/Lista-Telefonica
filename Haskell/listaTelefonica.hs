@@ -1,5 +1,3 @@
-
-
 printMenu:: IO() 
 printMenu = do
 	print "opcoes:"
@@ -12,9 +10,9 @@ printMenu = do
 	print "7. Sair"
 	print "Digite sua opção: "
 
-adicionaContato:: [Int]
-adicionaContato = do
-	[]
+adicionaContato:: [Int] -> [Int]
+adicionaContato array = array ++ [1]
+	
 
 listaContato::[Int]
 listaContato = do
@@ -40,29 +38,23 @@ sair:: [Int]
 sair = do
 	[]
 
-opcaoInvalida:: [Int]
-opcaoInvalida = do
+opcaoInvalida:: [Int] -> [Int]
+opcaoInvalida array= do
 	[]	
 
-acoesMenu:: String -> [Int]
-acoesMenu opcao
-	|opcao == "1" = adicionaContato 
-	|opcao == "2" = listaContato 
-	|opcao == "3" = buscaContato 
-	|opcao == "4" = listaGrupo
-	|opcao == "5" = listaContatosOrdenados
-	|opcao == "6" = chamadaEmergencia
-	|opcao == "7" = sair
-	|otherwise = opcaoInvalida
+acoesMenu:: String -> [Int] -> [Int]
+acoesMenu opcao array
+	|opcao == "1" = adicionaContato array
+	|otherwise = opcaoInvalida array
 	
 escolheAcoes::[Int] -> IO()	
 escolheAcoes array = do
 	printMenu
 	opcao <- getLine
-	let resposta = acoesMenu opcao
+	let resposta = acoesMenu opcao array
+	print array
 	escolheAcoes resposta
 main::IO()
 main = do
 	print "----- Lista Telefonica -----"
 	escolheAcoes [] 
-	
