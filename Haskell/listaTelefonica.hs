@@ -1,3 +1,20 @@
+salvaContato :: String -> String -> IO ()
+salvaContato nome numero = do
+			appendFile "lista.txt" (nome++ "," ++ numero ++ "," ++ "0" ++ "\n")
+		
+			
+listaContatos :: IO()
+listaContatos = do
+	x <- readFile "lista.txt"
+	print x
+
+promptLine :: String -> IO String
+promptLine prompt = do
+    putStr prompt
+    getLine
+
+
+
 printMenu:: IO() 
 printMenu = do
 	print "opcoes:"
@@ -10,51 +27,23 @@ printMenu = do
 	print "7. Sair"
 	print "Digite sua opção: "
 
-adicionaContato:: [Int] -> [Int]
-adicionaContato array = array ++ [1]
-	
 
-listaContato::[Int]
-listaContato = do
-	[]
 
-buscaContato:: [Int]
-buscaContato = do
-	[]
-
-listaGrupo:: [Int]
-listaGrupo = do
-	[]
-
-chamadaEmergencia:: [Int]
-chamadaEmergencia = do
-	[]
-
-listaContatosOrdenados::[Int]
-listaContatosOrdenados = do
-	[]
-	
-sair:: [Int]
-sair = do
-	[]
-
-opcaoInvalida:: [Int] -> [Int]
-opcaoInvalida array= do
-	[]	
-
-acoesMenu:: String -> [Int] -> [Int]
-acoesMenu opcao array
-	|opcao == "1" = adicionaContato array
-	|otherwise = opcaoInvalida array
-	
-escolheAcoes::[Int] -> IO()	
-escolheAcoes array = do
-	printMenu
-	opcao <- getLine
-	let resposta = acoesMenu opcao array
-	print array
-	escolheAcoes resposta
-main::IO()
 main = do
-	print "----- Lista Telefonica -----"
-	escolheAcoes [] 
+	printMenu
+	opcao <-  getLine
+	 
+	if((read opcao) == 1) then do
+		print "Digite o nome do contato"
+ 		nome <- getLine
+ 		print "Digite o numero do contato"
+ 		numero <- getLine
+		salvaContato nome numero
+		
+	else if ((read opcao == 2)) then do
+		listaContatos
+		else
+			print "a"
+	
+
+
