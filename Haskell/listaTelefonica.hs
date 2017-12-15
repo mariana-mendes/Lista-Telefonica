@@ -1,9 +1,10 @@
 salvaContato :: String -> String -> IO ()
 salvaContato nome numero = do
-			appendFile "lista.txt" (nome++ " " ++ numero ++ " " ++ "0" ++ "n")
+			let contato = Contact nome "adsad" numero
+			appendFile "lista.txt" (nome)
 		
-	
-	
+   
+   
 	
 			
 
@@ -26,6 +27,15 @@ promptLine :: String -> IO String
 promptLine prompt = do
     putStr prompt
     getLine
+
+data Contact = Contact {
+  firstName :: String,
+  lastName :: String,
+  phoneNumber :: String 
+ 
+} deriving Show
+
+
 
 
 
