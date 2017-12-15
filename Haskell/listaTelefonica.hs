@@ -1,18 +1,27 @@
 salvaContato :: String -> String -> IO ()
 salvaContato nome numero = do
-			appendFile "lista.txt" (nome++ "," ++ numero ++ "," ++ "0" ++ "\n")
+			appendFile "lista.txt" (nome++ " " ++ numero ++ " " ++ "0" ++ "n")
 		
 	
 	
 	
 			
-listaContatos :: IO()
+
 listaContatos = do
-	x <- readFile "lista.txt"
-	print x
-
-
-
+	(x:xs) <- readFile "lista.txt"
+	putStrLn "Nome  Número chamadas"
+	listar (x:xs) ""
+	
+listar:: String -> String -> IO()
+listar [] x = putStrLn x 
+listar (x:xs) atual = do
+	if([x] /= "n") then do
+		listar xs (atual ++ [x])
+	else if([x] == "n") then do 
+		putStrLn atual
+		listar xs ""
+	else 
+		print atual
 promptLine :: String -> IO String
 promptLine prompt = do
     putStr prompt
