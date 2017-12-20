@@ -1,25 +1,28 @@
 salvaContato :: String -> String -> IO ()
 salvaContato nome numero = do
-			let contato = Contact nome "adsad" numero
-			appendFile "lista.txt" (nome)
 		
+			appendFile "nomes.txt" (nome ++ "|")
+			appendFile "telefones.txt" (numero ++ "|")
    
    
 	
 			
 
 listaContatos = do
-	(x:xs) <- readFile "lista.txt"
-	putStrLn "Nome  Número chamadas"
-	listar (x:xs) ""
+	(x:xs) <- readFile "nomes.txt"
+	(y:ys) <- readFile "telefones.txt"
+	let nomes = listar (x:xs) ""
+	let telefones = listar(y:ys) ""
 	
-listar:: String -> String -> IO()
-listar [] x = putStrLn x 
-listar (x:xs) atual = do
-	if([x] /= "n") then do
+	
+	
+listar:: String -> [String] -> String
+listar [] x = x 
+listar (x:xs) [atual] = do
+	if([x] /= "|") then do
 		listar xs (atual ++ [x])
-	else if([x] == "n") then do 
-		putStrLn atual
+	else if([x] == "|") then do 
+		
 		listar xs ""
 	else 
 		print atual
@@ -34,8 +37,6 @@ data Contact = Contact {
   phoneNumber :: String 
  
 } deriving Show
-
-
 
 
 
