@@ -15,8 +15,8 @@ listaContatos = do
 	else do	
 		(x:xs) <- readFile "nomes.txt"
 		(y:ys) <- readFile "telefones.txt"
-		let (nome:restoNomes) = listar (x:xs) "" []
-		let (telefone:telefones) = listar(y:ys) "" []
+		let (nome:restoNomes) = carregaContatos (x:xs) "" []
+		let (telefone:telefones) = carregaContatos(y:ys) "" []
 		printar (nome:restoNomes) (telefone:telefones)
 	
 printar:: [String] -> [String] -> IO()
@@ -29,26 +29,24 @@ printar (nome:restoNomes) (telefone:restoTelefones) = do
 	
 	
 	
-listar:: String -> String -> [String] -> [String]
-listar [] x [] = []
-listar [] x lista = lista ++ [x] 
-listar (x:xs) atual lista = do
+carregaContatos:: String -> String -> [String] -> [String]
+carregaContatos [] x [] = []
+carregaContatos [] x lista = lista ++ [x] 
+carregaContatos (x:xs) atual lista = do
 	if([x] /= "|") then do 
-		listar xs (atual ++ [x]) lista
+		carregaContatos xs (atual ++ [x]) lista
 	else if([x] == "|") then do 
-		listar xs "" (lista ++ [atual])
+		carregaContatos xs "" (lista ++ [atual])
 	else 
 		lista ++ [atual]
-
-
 
 exibeContato :: String -> IO()
 exibeContato "" = print "Inexistente"
 exibeContato nome = do
 	(x:xs) <- readFile "nomes.txt"
 	(y:ys) <- readFile "telefones.txt"
-	let nomes = listar (x:xs) "" []
-	let telefones = listar (y:ys) "" []
+	let nomes = carregaContatos (x:xs) "" []
+	let telefones = carregaContatos (y:ys) "" []
 	let resultado = buscaContato nome nomes telefones
 	print resultado
 	
@@ -62,6 +60,28 @@ buscaContato nome (x:xs) (y:ys) = do
 		x ++ " " ++ y
 	else 
 		buscaContato nome xs ys
+		
+deletaContato :: String -> String -> String -> [String]
+deletaContato nome n t = do
+
+	let nomes = carregaContatos n "" []
+	let telefones = carregaContatos t "" []
+	let resultado = apagaContato nome nomes telefones
+	resultado
+	
+apagaContato :: String -> [String] -> [String] -> [String]
+apagaContato nome [] []  = []
+apagaContato nome (x:xs) (y:ys) = do
+	if (x == nome) then do
+		apagaContato nome xs ys
+	else 
+		 [x] ++ [y] ++ apagaContato nome xs ys 
+		 
+reescreveArquivo :: [String] -> IO()
+reescreveArquivo [] = print "cabou porca"
+reescreveArquivo (x:xs) = do
+	salvaContato x (head xs)
+	reescreveArquivo (tail xs)
 
 printMenu:: IO() 
 printMenu = do
@@ -69,7 +89,7 @@ printMenu = do
 	putStrLn "1. Adicionar contato."
 	putStrLn "2. Listar contatos."
 	putStrLn "3. Busca contato."
-	putStrLn "4. Listar por Grupo."
+	putStrLn "4. Excluir Contato."
 	putStrLn "5. Listar contatos ordenados"
 	putStrLn "6. Chamada de Emergência"
 	putStrLn "7. Sair"
@@ -94,6 +114,13 @@ main = do
 		putStrLn "Digite o nome do contato "
 		nome <- getLine
 		exibeContato nome
+	else if ((read opcao == 4)) then do
+		(x:xs) <- readFile "nomes.txt"
+		(y:ys) <- readFile "telefones.txt"
+		putStrLn "Digite o nome do contato "
+		nome <- getLine
+		reescreveArquivo (deletaContato (x:xs) (y:ys) nome)
+		
 	else
 		print "opcao invalida"
 		
