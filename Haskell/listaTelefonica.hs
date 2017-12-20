@@ -7,13 +7,17 @@ salvaContato nome numero = do
    
 	
 			
-
 listaContatos = do
-	(x:xs) <- readFile "nomes.txt"
-	(y:ys) <- readFile "telefones.txt"
-	let (nome:restoNomes) = listar (x:xs) "" []
-	let (telefone:telefones) = listar(y:ys) "" []
-	printar (nome:restoNomes) (telefone:telefones)
+
+	nomes <- readFile "nomes.txt"
+	if(length nomes == 0) then do
+		putStrLn "Nenhum contato adicionado"
+	else do	
+		(x:xs) <- readFile "nomes.txt"
+		(y:ys) <- readFile "telefones.txt"
+		let (nome:restoNomes) = listar (x:xs) "" []
+		let (telefone:telefones) = listar(y:ys) "" []
+		printar (nome:restoNomes) (telefone:telefones)
 	
 printar:: [String] -> [String] -> IO()
 printar [""] [""] = putStrLn "fim"
@@ -35,19 +39,29 @@ listar (x:xs) atual lista = do
 		listar xs "" (lista ++ [atual])
 	else 
 		lista ++ [atual]
-promptLine :: String -> IO String
-promptLine prompt = do
-    putStr prompt
-    getLine
-
-data Contact = Contact {
-  firstName :: String,
-  lastName :: String,
-  phoneNumber :: String 
- 
-} deriving Show
 
 
+
+exibeContato :: String -> IO()
+exibeContato "" = print "Inexistente"
+exibeContato nome = do
+	(x:xs) <- readFile "nomes.txt"
+	(y:ys) <- readFile "telefones.txt"
+	let nomes = listar (x:xs) "" []
+	let telefones = listar (y:ys) "" []
+	let resultado = buscaContato nome nomes telefones
+	print resultado
+	
+
+
+
+buscaContato :: String -> [String] -> [String] -> String
+buscaContato nome [] [] = ""
+buscaContato nome (x:xs) (y:ys) = do
+	if(x == nome) then do
+		x ++ " " ++ y
+	else 
+		buscaContato nome xs ys
 
 printMenu:: IO() 
 printMenu = do
@@ -76,8 +90,13 @@ main = do
 		
 	else if ((read opcao == 2)) then do
 		listaContatos
+	else if((read opcao == 3)) then do
+		putStrLn "Digite o nome do contato "
+		nome <- getLine
+		exibeContato nome
 	else
-		putStrLn "Opcao inválida, tente novamente."
+		print "opcao invalida"
+		
 	main 
 
 
