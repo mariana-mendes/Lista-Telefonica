@@ -11,21 +11,30 @@ salvaContato nome numero = do
 listaContatos = do
 	(x:xs) <- readFile "nomes.txt"
 	(y:ys) <- readFile "telefones.txt"
-	let nomes = listar (x:xs) ""
-	let telefones = listar(y:ys) ""
+	let (nome:restoNomes) = listar (x:xs) "" []
+	let (telefone:telefones) = listar(y:ys) "" []
+	printar (nome:restoNomes) (telefone:telefones)
+	
+printar:: [String] -> [String] -> IO()
+printar [""] [""] = putStrLn "fim"
+printar (nome:restoNomes) (telefone:restoTelefones) = do 
+	putStrLn ("nome: " ++ nome)
+	putStrLn ("telefone: " ++ telefone)
+	printar restoNomes restoTelefones
+	 
 	
 	
 	
-listar:: String -> [String] -> String
-listar [] x = x 
-listar (x:xs) [atual] = do
-	if([x] /= "|") then do
-		listar xs (atual ++ [x])
+listar:: String -> String -> [String] -> [String]
+listar [] x [] = []
+listar [] x lista = lista ++ [x] 
+listar (x:xs) atual lista = do
+	if([x] /= "|") then do 
+		listar xs (atual ++ [x]) lista
 	else if([x] == "|") then do 
-		
-		listar xs ""
+		listar xs "" (lista ++ [atual])
 	else 
-		print atual
+		lista ++ [atual]
 promptLine :: String -> IO String
 promptLine prompt = do
     putStr prompt
