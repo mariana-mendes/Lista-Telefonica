@@ -119,7 +119,8 @@ main = do
 		(y:ys) <- readFile "telefones.txt"
 		putStrLn "Digite o nome do contato "
 		nome <- getLine
-		reescreveArquivo (deletaContato (x:xs) (y:ys) nome)
+		
+		reescreveArquivo (deletaContato nome (x:xs) (y:ys)) 
 		
 	else
 		print "opcao invalida"
