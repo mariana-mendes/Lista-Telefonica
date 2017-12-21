@@ -104,7 +104,7 @@ sobrescreve :: IO()
 sobrescreve  = do
 	writeFile "nomes.txt" ("")
 	writeFile "telefones.txt" ("")
-	writeFile "bloqueados.txt"("")
+	---writeFile "bloqueados.txt"("")
 
 
 
@@ -140,6 +140,7 @@ ordena (x:xs) = lesserThan ++ [x] ++ greaterThan
     where
     lesserThan =ordena $ filter (< x) xs
     greaterThan = ordena $ filter (>= x) xs
+	
 	
 ----------------------------- EDITA CONTATO ----------------------------------------------------
 ------- nomes atualizados
@@ -188,10 +189,15 @@ main = do
 		
 	else if ( opcao == "2") then do
 		listaContatos
+		
+		
 	else if((read opcao == 3)) then do
 		putStrLn "Digite o nome do contato "
 		nome <- getLine
 		exibeContato nome
+		
+		
+----------- DELETE ------------------		
 	else if (opcao == "4") then do	
 		(x:xs) <- readFile "nomes.txt"
 		(y:ys) <- readFile "telefones.txt"
@@ -205,6 +211,9 @@ main = do
 		atualizaArquivo attNomes attNums
 	
 		print "Contato excluido"
+		
+		
+----------- BLOCK ------------------		
 	else if(opcao == "5") then do
 		(x:xs) <- readFile "nomes.txt"
 		bloq <- readFile "bloqueados.txt"
@@ -215,6 +224,8 @@ main = do
 		a <- removeFile "bloqueados.txt"
 		atualizaBloqueados saida
 		print "pronto"
+		
+----------- ORDENAR -----------------		
 	else if(opcao == "6") then do
 		(x:xs) <- readFile "nomes.txt"
 		let nomes = carregaContatos (x:xs) "" []
@@ -222,6 +233,9 @@ main = do
 		let telefones = carregaContatos (y:ys) "" []
 		let nomesOrdenado = ordena nomes
 		printaOrdenado nomesOrdenado nomes telefones
+		
+		
+-------------- EDITAR ------------------		
 	else if(opcao == "7") then do 
 		
 		putStrLn "qual contato deseja alterar?"
@@ -236,8 +250,9 @@ main = do
 		putStrLn "1. Nome"
 		putStrLn "2.Telefone"
 		putStrLn "3.Nome e telefone"
-		
 		alternativa <- getLine 
+		
+		------------ NOME -----------------
 		
 		if(alternativa == "1")then do 
 			putStrLn "Digite o novo nome:"
@@ -251,6 +266,9 @@ main = do
 			sobrescreve 
 			atualizaArquivo nomesEditados telefones
 			putStrLn "Nome alterado com sucesso"
+			
+		---------- TELEFONE -----------------
+			
 		else if(alternativa == "2") then do 
 			putStrLn "Digite o novo Telefone:"
 			novoNumero <- getLine 
@@ -263,9 +281,10 @@ main = do
 			c <- removeFile "bloqueados.txt"
 			sobrescreve 
 			atualizaArquivo nomes telefonesEditados
-			
-			
 			putStrLn "Telefone alterado com sucesso"
+			
+		---------- NOME E TELEFONE --------------	
+		
 		else if(alternativa == "3") then do 
 			putStrLn "Digite o novo nome:"
 			novoNome <- getLine 
