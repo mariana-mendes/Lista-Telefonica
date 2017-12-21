@@ -24,6 +24,7 @@ listaContatos = do
 		let (telefone:telefones) = carregaContatos(y:ys) "" []
 		printar (nome:restoNomes) (telefone:telefones) (w:ws)
 	
+	
 printar:: [String] -> [String] -> String-> IO()
 printar [""] [""] x = putStrLn "fim"
 printar (nome:restoNomes) (telefone:restoTelefones)(bloq:restobloq) = do 
@@ -104,9 +105,7 @@ sobrescreve :: IO()
 sobrescreve  = do
 	writeFile "nomes.txt" ("")
 	writeFile "telefones.txt" ("")
-	---writeFile "bloqueados.txt"("")
-
-
+	
 
 atualizaArquivo :: [String] -> [String] -> IO()
 atualizaArquivo [] [] = print "agenda atualizada"
@@ -120,6 +119,14 @@ atualizaBloqueados:: String -> IO()
 atualizaBloqueados nova = writeFile "bloqueados.txt" (nova)
 
 
+
+---------------------------------GRUPOS------------------------------------------------------
+
+criarGrupo :: String -> IO()
+criarGrupo nome = writeFile (nome ++ ".txt")("")
+
+adicionarContatoAGrupo :: String -> String -> IO()
+adicionarContatoAGrupo nomeGrupo nomeContato = appendFile (nomeGrupo ++ ".txt") (nomeContato ++ "|")
 
 
 
@@ -160,19 +167,44 @@ buscaNumero nomeBuscado (nome:nomes) (telefone:telefones) = do
 	else
 		buscaContato nomeBuscado nomes telefones
 
-		
------------------------------ MENU ----------------------------------------------------
+
+
+----------------------------- CHAMAR CONTATO -------------------------------------------------
+chamar :: String -> [String] -> String -> String
+chamar n [] "" = ""
+chamar n (nome:nomes) (ch:chmds) = do
+	if(n /= nome) then do
+		 [ch] ++ chamar n nomes chmds
+	else do
+		let resultado = (read [ch]) +1
+		(show resultado) ++ (chamar n nomes chmds)
+
+
+sobrescreveChamada :: IO()
+sobrescreveChamada = do
+	writeFile "chamadas.txt" ("")
+	
+
+transcreveChamadas :: String -> IO()
+transcreveChamadas lista = do
+	appendFile "chamadas.txt" (lista)
+	
+
+
+--------------------------------- MENU ----------------------------------------------------
 
 printMenu:: IO() 
 printMenu = do
 	putStrLn "opcoes:"
-	putStrLn "1. Adicionar contato."
-	putStrLn "2. Listar contatos."
-	putStrLn "3. Busca contato."
+	putStrLn "1. Adicionar Contato."
+	putStrLn "2. Listar Contatos."
+	putStrLn "3. Busca Contato."
 	putStrLn "4. Excluir Contato."
-	putStrLn "5. Bloquear contato"
-	putStrLn "6. Ordenar contatos"
-	putStrLn "7. altera Contato"
+	putStrLn "5. Bloquear Contato"
+	putStrLn "6. Ordenar Contatos"
+	putStrLn "7. Altera Contato"
+	putStrLn "8. Chamar Contato"
+	putStrLn "9. Adicionar Grupos"
 	putStrLn "Digite sua opção: "
 
 
@@ -185,6 +217,7 @@ main = do
  		nome <- getLine
  		putStrLn "Digite o numero do contato"
  		numero <- getLine
+ 		appendFile "chamadas.txt" ("0")
 		salvaContato nome numero
 		
 	else if ( opcao == "2") then do
@@ -313,6 +346,50 @@ main = do
 			putStrLn "Nome e telefone alterados com sucesso"
 		else do 
 			putStrLn "Alternativa inválida"
+			
+	------------CHAMAR---------------------		
+	else if(opcao == "8") then do
+		contatos <- readFile "nomes.txt"
+		chamadas <- readFile "chamadas.txt"
+		let loadNomes = carregaContatos contatos  "" []
+		
+		putStrLn "Digite o nome do contato"
+		nome <- getLine
+		let novasChamadas = chamar nome loadNomes chamadas
+		
+		a <- removeFile "chamadas.txt"
+		sobrescreveChamada
+		transcreveChamadas novasChamadas
+		
+		print "a"
+	
+	else if(opcao == "9") then do
+		putStrLn "Deseja:"
+		putStrLn "1. Criar um novo grupo"
+		putStrLn "2. Adicionar um contato a um grupo"
+		putStrLn "3. Remover um grupo"
+			
+		opcao <- getLine
+		if (opcao == "1") then do
+			putStrLn "Digite o nome do grupo:"
+			nomeGrupo <- getLine
+			criarGrupo nomeGrupo
+		else if (opcao == "2") then do
+			putStrLn "Digite o nome do contato:"
+			nomeContato <- getLine
+			putStrLn "Digite o nome do grupo:"
+			nomeGrupo <- getLine
+			(x:xs) <- readFile "nomes.txt"
+			let nomes = carregaContatos (x:xs) "" []
+			if (nomeContato `elem` nomes) then do
+				adicionarContatoAGrupo nomeGrupo nomeContato
+			else
+				print "Esse contato não existe"
+	
+		else
+				print "not implemented"
+	
+	
 	else
-		print "opcao invalida"
+		print "Invalida"
 	main 
