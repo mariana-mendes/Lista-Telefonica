@@ -121,10 +121,17 @@ atualiza n (nome:nomes) (num:nums) = do
 	else 
 		atualiza n nomes nums
 
-sob :: [String]-> [String]-> IO()
-sob (x:xs) (y:ys) = do
+sob :: IO()
+sob  = do
 	writeFile "nomes.txt" ("")
 	writeFile "telefones.txt" ("")
+
+atualizaArquivo :: [String] -> [String] -> IO()
+atualizaArquivo [] [] = print "agenda atualizada"
+atualizaArquivo (x:xs) (y:ys) = do
+	salvaContato x y
+	atualizaArquivo xs ys
+
 	
 
 main = do
@@ -149,18 +156,14 @@ main = do
 		(y:ys) <- readFile "telefones.txt"
 		putStrLn "Digite o nome do contato "
 		nome <- getLine
-		--AQUIIaaaaa
-		let aa = (carregaContatos (x:xs)  "" []) 
-		print aa
 		let attNums = atualiza nome  (carregaContatos (x:xs)  "" []) (carregaContatos (y:ys) "" []) 
 		let attNomes = atualizaLista nome (carregaContatos (x:xs) "" [])
-		print attNomes
-		print attNums
 		a <- removeFile "nomes.txt"
 		b <- removeFile "telefones.txt"
-		sob attNomes attNums
+		sob 
+		atualizaArquivo attNomes attNums
 	
-		print "A"
+		print "Contato excluido"
 	else if((read opcao) == 5) then do
 		(x:xs) <- readFile "nomes.txt"
 		(y:ys) <- readFile "telefones.txt"
