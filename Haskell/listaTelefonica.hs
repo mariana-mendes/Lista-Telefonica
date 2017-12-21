@@ -1,6 +1,7 @@
 
 import System.IO
 import Data.Char
+import Data.List
 import System.Directory
 
 ------------------------  ADICIONAR --------------------------------------
@@ -205,6 +206,7 @@ printMenu = do
 	putStrLn "7. Altera Contato"
 	putStrLn "8. Chamar Contato"
 	putStrLn "9. Adicionar Grupos"
+	putStrLn "10. Adicionar Contato aos Favoritos"
 	putStrLn "Digite sua opção: "
 
 
@@ -389,6 +391,22 @@ main = do
 		else
 				print "not implemented"
 	
+	else if(opcao == "10") then do
+		putStrLn "Digite o nome do contato"
+		nome <- getLine
+		n <- readFile "nomes.txt"
+		let nomes = carregaContatos n "" []
+		f <- readFile "favoritos.txt"
+		let favoritos = carregaContatos f "" []
+		t <- readFile "telefones.txt"
+		let telefones = carregaContatos t "" []
+		if (nome `elem` favoritos) then do
+			print "Esse contato já está nos seus favoritos"
+		else if (nome `elem` nomes) then do
+			let tel = telefones !! (read (show (last (show (nome `elemIndex` nomes)))))
+			putStrLn "Contato adicionado com sucesso"
+		else
+			print "Esse contato não existe"
 	
 	else
 		print "Invalida"
