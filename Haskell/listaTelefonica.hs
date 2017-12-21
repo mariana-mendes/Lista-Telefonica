@@ -62,7 +62,7 @@ buscaContato :: String -> [String] -> [String] -> String
 buscaContato nome [] [] = ""
 buscaContato nome (x:xs) (y:ys) = do
 	if(x == nome) then do
-		x ++ " " ++ y
+		"Nome :" ++ x ++ " " ++ "Telefone: "++ y
 	else 
 		buscaContato nome xs ys
 		
@@ -104,7 +104,7 @@ printMenu = do
 	putStrLn "3. Busca contato."
 	putStrLn "4. Excluir Contato."
 	putStrLn "5. Bloquear contato"
-	putStrLn "6. Chamada de Emergência"
+	putStrLn "6. Ordenar contatos"
 	putStrLn "7. Sair"
 	putStrLn "Digite sua opção: "
 
@@ -139,8 +139,21 @@ atualizaArquivo (x:xs) (y:ys) = do
 	atualizaArquivo xs ys
 atualizaBloqueados:: String -> IO()
 atualizaBloqueados nova = writeFile "bloqueados.txt" (nova)
-	
 
+ordena:: [String] -> [String]	
+ordena [] = []
+ordena (x:xs) = lesserThan ++ [x] ++ greaterThan
+    where
+    lesserThan =ordena $ filter (< x) xs
+    greaterThan = ordena $ filter (>= x) xs
+printaOrdenado ::[String] -> [String] -> [String] -> IO()
+printaOrdenado [] x y = putStrLn "fim"
+printaOrdenado (x:xs) nomes telefones = do
+	if(x /= "") then do
+		putStrLn (buscaContato x  nomes telefones)
+		printaOrdenado xs nomes telefones
+	else do
+		printaOrdenado xs nomes telefones
 main = do
 	printMenu
 	opcao <-  getLine
@@ -181,6 +194,13 @@ main = do
 		a <- removeFile "bloqueados.txt"
 		atualizaBloqueados saida
 		print "pronto"
+	else if((read opcao) == 6) then do
+		(x:xs) <- readFile "nomes.txt"
+		let nomes = carregaContatos (x:xs) "" []
+		(y:ys) <- readFile "telefones.txt" 
+		let telefones = carregaContatos (y:ys) "" []
+		let nomesOrdenado = ordena nomes
+		printaOrdenado nomesOrdenado nomes telefones
 	else
 		print "opcao invalida"
 	main 
