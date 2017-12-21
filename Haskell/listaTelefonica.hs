@@ -2,14 +2,17 @@
 import System.IO
 import Data.Char
 import System.Directory
+
+------------------------  ADICIONAR --------------------------------------
 salvaContato :: String -> String -> IO ()
 salvaContato nome numero = do
-		
 			appendFile "nomes.txt" (nome ++ "|")
 			appendFile "bloqueados.txt" ("0")
 			appendFile "telefones.txt" (numero ++ "|")
-listaContatos = do
 
+
+------------------------ LISTAR  -----------------------------------------
+listaContatos = do
 	nomes <- readFile "nomes.txt"
 	if(length nomes == 0) then do
 		putStrLn "Nenhum contato adicionado"
@@ -32,8 +35,6 @@ printar (nome:restoNomes) (telefone:restoTelefones)(bloq:restobloq) = do
 		printar restoNomes restoTelefones restobloq
 	 
 	
-	
-	
 carregaContatos:: String -> String -> [String] -> [String]
 carregaContatos [] x [] = []
 carregaContatos [] x lista = lista ++ [x] 
@@ -44,6 +45,8 @@ carregaContatos (x:xs) atual lista = do
 		carregaContatos xs "" (lista ++ [atual])
 	else 
 		lista ++ [atual]
+
+---------------- EXIBIR CONTATO ESPECIFICO ----------------------------- 
 
 exibeContato :: String -> IO()
 exibeContato "" = print "Inexistente"
@@ -56,8 +59,6 @@ exibeContato nome = do
 	print resultado
 	
 
-
-
 buscaContato :: String -> [String] -> [String] -> String
 buscaContato nome [] [] = ""
 buscaContato nome (x:xs) (y:ys) = do
@@ -65,28 +66,8 @@ buscaContato nome (x:xs) (y:ys) = do
 		"Nome :" ++ x ++ " " ++ "Telefone: "++ y
 	else 
 		buscaContato nome xs ys
-		
-deletaContato :: String -> String -> String -> [String]
-deletaContato nome n t = do
-
-	let nomes = carregaContatos n "" []
-	let telefones = carregaContatos t "" []
-	let resultado = apagaContato nome nomes telefones
-	resultado
 	
-apagaContato :: String -> [String] -> [String] -> [String]
-apagaContato nome [] []  = []
-apagaContato nome (x:xs) (y:ys) = do
-	if (x == nome) then do
-		apagaContato nome xs ys
-	else 
-		 [x] ++ [y] ++ apagaContato nome xs ys 
-		 
-reescreveArquivo :: [String] -> IO()
-reescreveArquivo [] = print "cabou porca"
-reescreveArquivo (x:xs) = do
-	salvaContato x (head xs)
-	reescreveArquivo (tail xs)
+------------------------------ BLOCK ---------------------------------------
 
 bloqueaContato:: String -> [String] -> String -> String
 bloqueaContato nome [] []  = ""
@@ -95,6 +76,70 @@ bloqueaContato nome (x:nomes) (w:bloqueados)
 	|nome == x = "1" ++bloqueaContato nome nomes  bloqueados
 	|x == "" = 	bloqueaContato nome nomes  bloqueados 
 	|otherwise = [w] ++ bloqueaContato nome nomes  bloqueados 
+
+
+
+
+----------------------------- DELETE ------------------------------------------
+
+------- nomes atualizados
+atualizaLista :: String -> [String] -> [String]
+atualizaLista n [""] = []
+atualizaLista n (nome:nomes) = do
+	if(n /= nome) then do
+		[nome] ++ atualizaLista n nomes
+	else 
+		atualizaLista n nomes
+
+------numeros atualizados
+atualiza :: String -> [String]-> [String] -> [String] 	
+atualiza n [""] [""] = []
+atualiza n (nome:nomes) (num:nums) = do
+	if(n /= nome) then do
+		[num] ++ atualiza n nomes nums
+	else 
+		atualiza n nomes nums
+
+sobrescreve :: IO()
+sobrescreve  = do
+	writeFile "nomes.txt" ("")
+	writeFile "telefones.txt" ("")
+
+
+
+atualizaArquivo :: [String] -> [String] -> IO()
+atualizaArquivo [] [] = print "agenda atualizada"
+atualizaArquivo (x:xs) (y:ys) = do
+	salvaContato x y
+	atualizaArquivo xs ys
+atualizaBloqueados:: String -> IO()
+atualizaBloqueados nova = writeFile "bloqueados.txt" (nova)
+
+
+
+
+
+-----------------------------ORDENACAO-----------------------------------------------
+
+printaOrdenado ::[String] -> [String] -> [String] -> IO()
+printaOrdenado [] x y = putStrLn "fim"
+printaOrdenado (x:xs) nomes telefones = do
+	if(x /= "") then do
+		putStrLn (buscaContato x  nomes telefones)
+		printaOrdenado xs nomes telefones
+	else do
+		printaOrdenado xs nomes telefones
+		
+ordena:: [String] -> [String]	
+ordena [] = []
+ordena (x:xs) = lesserThan ++ [x] ++ greaterThan
+    where
+    lesserThan =ordena $ filter (< x) xs
+    greaterThan = ordena $ filter (>= x) xs
+	
+
+		
+----------------------------- MENU ----------------------------------------------------
 
 printMenu:: IO() 
 printMenu = do
@@ -108,52 +153,8 @@ printMenu = do
 	putStrLn "7. Sair"
 	putStrLn "Digite sua opção: "
 
--- nomes atualizados
-atualizaLista :: String -> [String] -> [String]
-atualizaLista n [""] = []
-atualizaLista n (nome:nomes) = do
-	if(n /= nome) then do
-		[nome] ++ atualizaLista n nomes
-	else 
-		atualizaLista n nomes
 
-
---numeros atualizados
-atualiza :: String -> [String]-> [String] -> [String] 	
-atualiza n [""] [""] = []
-atualiza n (nome:nomes) (num:nums) = do
-	if(n /= nome) then do
-		[num] ++ atualiza n nomes nums
-	else 
-		atualiza n nomes nums
-
-sob :: IO()
-sob  = do
-	writeFile "nomes.txt" ("")
-	writeFile "telefones.txt" ("")
-
-atualizaArquivo :: [String] -> [String] -> IO()
-atualizaArquivo [] [] = print "agenda atualizada"
-atualizaArquivo (x:xs) (y:ys) = do
-	salvaContato x y
-	atualizaArquivo xs ys
-atualizaBloqueados:: String -> IO()
-atualizaBloqueados nova = writeFile "bloqueados.txt" (nova)
-
-ordena:: [String] -> [String]	
-ordena [] = []
-ordena (x:xs) = lesserThan ++ [x] ++ greaterThan
-    where
-    lesserThan =ordena $ filter (< x) xs
-    greaterThan = ordena $ filter (>= x) xs
-printaOrdenado ::[String] -> [String] -> [String] -> IO()
-printaOrdenado [] x y = putStrLn "fim"
-printaOrdenado (x:xs) nomes telefones = do
-	if(x /= "") then do
-		putStrLn (buscaContato x  nomes telefones)
-		printaOrdenado xs nomes telefones
-	else do
-		printaOrdenado xs nomes telefones
+	
 main = do
 	printMenu
 	opcao <-  getLine
@@ -180,7 +181,7 @@ main = do
 		let attNomes = atualizaLista nome (carregaContatos (x:xs) "" [])
 		a <- removeFile "nomes.txt"
 		b <- removeFile "telefones.txt"
-		sob 
+		sobrescreve 
 		atualizaArquivo attNomes attNums
 	
 		print "Contato excluido"
