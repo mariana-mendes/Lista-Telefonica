@@ -16,16 +16,20 @@ listaContatos = do
 	else do	
 		(x:xs) <- readFile "nomes.txt"
 		(y:ys) <- readFile "telefones.txt"
+		(w:ws) <- readFile "bloqueados.txt"
 		let (nome:restoNomes) = carregaContatos (x:xs) "" []
 		let (telefone:telefones) = carregaContatos(y:ys) "" []
-		printar (nome:restoNomes) (telefone:telefones)
+		printar (nome:restoNomes) (telefone:telefones) (w:ws)
 	
-printar:: [String] -> [String] -> IO()
-printar [""] [""] = putStrLn "fim"
-printar (nome:restoNomes) (telefone:restoTelefones) = do 
-	putStrLn ("nome: " ++ nome)
-	putStrLn ("telefone: " ++ telefone)
-	printar restoNomes restoTelefones
+printar:: [String] -> [String] -> String-> IO()
+printar [""] [""] x = putStrLn "fim"
+printar (nome:restoNomes) (telefone:restoTelefones)(bloq:restobloq) = do 
+	if([bloq] == "1") then do
+		printar restoNomes restoTelefones restobloq
+	else do
+		putStrLn ("nome: " ++ nome)
+		putStrLn ("telefone: " ++ telefone)
+		printar restoNomes restoTelefones restobloq
 	 
 	
 	
@@ -62,6 +66,21 @@ buscaContato nome (x:xs) (y:ys) = do
 	else 
 		buscaContato nome xs ys
 		
+deletaContato :: String -> String -> String -> [String]
+deletaContato nome n t = do
+
+	let nomes = carregaContatos n "" []
+	let telefones = carregaContatos t "" []
+	let resultado = apagaContato nome nomes telefones
+	resultado
+	
+apagaContato :: String -> [String] -> [String] -> [String]
+apagaContato nome [] []  = []
+apagaContato nome (x:xs) (y:ys) = do
+	if (x == nome) then do
+		apagaContato nome xs ys
+	else 
+		 [x] ++ [y] ++ apagaContato nome xs ys 
 		 
 reescreveArquivo :: [String] -> IO()
 reescreveArquivo [] = print "cabou porca"
@@ -69,11 +88,13 @@ reescreveArquivo (x:xs) = do
 	salvaContato x (head xs)
 	reescreveArquivo (tail xs)
 
-bloqueaContato:: String -> [String] -> [String] ->String -> String 
-bloqueaContato nome [] [] [] = []
-bloqueaContato nome (x:nomes) (y:telefones) (w:bloqueados)
-	|nome == x = "1" ++ (bloqueaContato nome nomes telefones bloqueados)
-	|otherwise = [w] ++ (bloqueaContato nome nomes telefones bloqueados)
+bloqueaContato:: String -> [String] -> String -> String
+bloqueaContato nome [] []  = ""
+bloqueaContato nome [""] "" = ""
+bloqueaContato nome (x:nomes) (w:bloqueados) 
+	|nome == x = "1" ++bloqueaContato nome nomes  bloqueados
+	|x == "" = 	bloqueaContato nome nomes  bloqueados 
+	|otherwise = [w] ++ bloqueaContato nome nomes  bloqueados 
 
 printMenu:: IO() 
 printMenu = do
@@ -116,7 +137,8 @@ atualizaArquivo [] [] = print "agenda atualizada"
 atualizaArquivo (x:xs) (y:ys) = do
 	salvaContato x y
 	atualizaArquivo xs ys
-
+atualizaBloqueados:: String -> IO()
+atualizaBloqueados nova = writeFile "bloqueados.txt" (nova)
 	
 
 main = do
@@ -151,18 +173,14 @@ main = do
 		print "Contato excluido"
 	else if((read opcao) == 5) then do
 		(x:xs) <- readFile "nomes.txt"
-		(y:ys) <- readFile "telefones.txt"
 		bloq <- readFile "bloqueados.txt"
-		
-		let nomes = carregaContatos (x:xs) 
-		let telefones = carregaContatos (y:ys)
+		let nomes = carregaContatos (x:xs) "" []
 		putStrLn "Digite o nome do contato "
 		nome <- getLine
-		
-		print "aa"
-		
-		
+		let saida = bloqueaContato nome nomes bloq 
+		a <- removeFile "bloqueados.txt"
+		atualizaBloqueados saida
+		print "pronto"
 	else
 		print "opcao invalida"
-		
 	main 
