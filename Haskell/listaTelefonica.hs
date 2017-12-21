@@ -2,11 +2,8 @@ salvaContato :: String -> String -> IO ()
 salvaContato nome numero = do
 		
 			appendFile "nomes.txt" (nome ++ "|")
+			appendFile "bloqueados.txt" ("0")
 			appendFile "telefones.txt" (numero ++ "|")
-   
-   
-	
-			
 listaContatos = do
 
 	nomes <- readFile "nomes.txt"
@@ -83,6 +80,12 @@ reescreveArquivo (x:xs) = do
 	salvaContato x (head xs)
 	reescreveArquivo (tail xs)
 
+bloqueaContato:: String -> [String] -> [String] ->String -> String 
+bloqueaContato nome [] [] [] = []
+bloqueaContato nome (x:nomes) (y:telefones) (w:bloqueados)
+	|nome == x = "1" ++ (bloqueaContato nome nomes telefones bloqueados)
+	|otherwise = [w] ++ (bloqueaContato nome nomes telefones bloqueados)
+
 printMenu:: IO() 
 printMenu = do
 	putStrLn "opcoes:"
@@ -90,12 +93,15 @@ printMenu = do
 	putStrLn "2. Listar contatos."
 	putStrLn "3. Busca contato."
 	putStrLn "4. Excluir Contato."
-	putStrLn "5. Listar contatos ordenados"
+	putStrLn "5. Bloquear contato"
 	putStrLn "6. Chamada de Emergência"
 	putStrLn "7. Sair"
 	putStrLn "Digite sua opção: "
 
-
+zeraArquivo:: String -> IO()
+zeraArquivo nome = do
+	print "aa"
+	writeFile nome ""
 
 main = do
 	printMenu
@@ -119,8 +125,21 @@ main = do
 		(y:ys) <- readFile "telefones.txt"
 		putStrLn "Digite o nome do contato "
 		nome <- getLine
-		
+		zeraArquivo "nomes.txt"
+		zeraArquivo "telefones.txt"
 		reescreveArquivo (deletaContato nome (x:xs) (y:ys)) 
+	else if((read opcao) == 5) then do
+		(x:xs) <- readFile "nomes.txt"
+		(y:ys) <- readFile "telefones.txt"
+		bloq <- readFile "bloqueados.txt"
+		
+		let nomes = carregaContatos (x:xs) 
+		let telefones = carregaContatos (y:ys)
+		putStrLn "Digite o nome do contato "
+		nome <- getLine
+		
+		print "aa"
+		
 		
 	else
 		print "opcao invalida"
