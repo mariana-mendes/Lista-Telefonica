@@ -21,7 +21,7 @@ listaContatos = do
 		printar (nome:restoNomes) (telefone:telefones)
 	
 printar:: [String] -> [String] -> IO()
-printar [" "] [" "] = putStrLn "fim"
+printar [""] [""] = putStrLn "fim"
 printar (nome:restoNomes) (telefone:restoTelefones) = do 
 	putStrLn ("nome: " ++ nome)
 	putStrLn ("telefone: " ++ telefone)
@@ -149,11 +149,11 @@ main = do
 		(y:ys) <- readFile "telefones.txt"
 		putStrLn "Digite o nome do contato "
 		nome <- getLine
-		--AQUII
-		let aa = (carregaContatos (x:xs)  " " []) 
+		--AQUIIaaaaa
+		let aa = (carregaContatos (x:xs)  "" []) 
 		print aa
-		let attNums = atualiza nome  (carregaContatos (x:xs)  " " []) (carregaContatos (y:ys) " " []) 
-		let attNomes = atualizaLista nome (carregaContatos (x:xs) " " [])
+		let attNums = atualiza nome  (carregaContatos (x:xs)  "" []) (carregaContatos (y:ys) "" []) 
+		let attNomes = atualizaLista nome (carregaContatos (x:xs) "" [])
 		print attNomes
 		print attNums
 		a <- removeFile "nomes.txt"
