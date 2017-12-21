@@ -69,13 +69,13 @@ buscaContato nome (x:xs) (y:ys) = do
 	
 ------------------------------ BLOCK ---------------------------------------
 
-bloqueaContato:: String -> [String] -> String -> String
-bloqueaContato nome [] []  = ""
-bloqueaContato nome [""] "" = ""
-bloqueaContato nome (x:nomes) (w:bloqueados) 
-	|nome == x = "1" ++bloqueaContato nome nomes  bloqueados
-	|x == "" = 	bloqueaContato nome nomes  bloqueados 
-	|otherwise = [w] ++ bloqueaContato nome nomes  bloqueados 
+bloqueaContato:: String -> [String] -> String -> String -> String
+bloqueaContato nome [] []  x= ""
+bloqueaContato nome [""] "" x= ""
+bloqueaContato nome (x:nomes) (w:bloqueados) op
+	|nome == x = op ++bloqueaContato nome nomes  bloqueados op
+	|x == "" =  bloqueaContato nome nomes  bloqueados op
+	|otherwise = [w] ++ bloqueaContato nome nomes  bloqueados op 
 
 
 
@@ -220,9 +220,20 @@ main = do
 		let nomes = carregaContatos (x:xs) "" []
 		putStrLn "Digite o nome do contato "
 		nome <- getLine
-		let saida = bloqueaContato nome nomes bloq 
-		a <- removeFile "bloqueados.txt"
-		atualizaBloqueados saida
+		putStrLn "Deseja bloquear ou desbloquear o contato "
+		putStrLn "1.Bloquear"
+		putStrLn "2.desbloquear"
+		op <- getLine
+		if(op == "1") then do 
+			let saida = bloqueaContato nome nomes bloq "1"
+			a <- removeFile "bloqueados.txt"
+			atualizaBloqueados saida
+		else do
+			let saida = bloqueaContato nome nomes bloq "0"
+			a <- removeFile "bloqueados.txt"
+			atualizaBloqueados saida
+		 
+		
 		print "pronto"
 		
 ----------- ORDENAR -----------------		
