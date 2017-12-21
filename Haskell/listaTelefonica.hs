@@ -39,7 +39,7 @@ carregaContatos:: String -> String -> [String] -> [String]
 carregaContatos [] x [] = []
 carregaContatos [] x lista = lista ++ [x] 
 carregaContatos (x:xs) atual lista = do
-	if([x] /= "|") then do 
+	if([x] /= "|" && [x] /= "") then do 
 		carregaContatos xs (atual ++ [x]) lista
 	else if([x] == "|") then do 
 		carregaContatos xs "" (lista ++ [atual])
@@ -104,11 +104,15 @@ sobrescreve :: IO()
 sobrescreve  = do
 	writeFile "nomes.txt" ("")
 	writeFile "telefones.txt" ("")
+	writeFile "bloqueados.txt"("")
 
 
 
 atualizaArquivo :: [String] -> [String] -> IO()
 atualizaArquivo [] [] = print "agenda atualizada"
+atualizaArquivo [""] [""] = print "agenda atualizada"
+atualizaArquivo [""] [] = print "agenda atualizada"
+atualizaArquivo [] [""] = print "agenda atualizada"
 atualizaArquivo (x:xs) (y:ys) = do
 	salvaContato x y
 	atualizaArquivo xs ys
@@ -137,6 +141,23 @@ ordena (x:xs) = lesserThan ++ [x] ++ greaterThan
     lesserThan =ordena $ filter (< x) xs
     greaterThan = ordena $ filter (>= x) xs
 	
+----------------------------- EDITA CONTATO ----------------------------------------------------
+------- nomes atualizados
+editaContato :: String -> String ->  [String] -> [String]
+editaContato dadoAntigo dadoNovo [""] = []
+editaContato dadoAntigo dadoNovo (dado:dados) = do
+	if(dadoAntigo /= dado) then do
+		[dado] ++ editaContato dadoAntigo dadoNovo dados
+	else 
+		[dadoNovo] ++ editaContato dadoAntigo dadoNovo dados
+
+buscaNumero:: String -> [String] -> [String] -> String
+buscaNumero x [] [] = "|"
+buscaNumero nomeBuscado (nome:nomes) (telefone:telefones) = do
+	if(nome == nomeBuscado) then do 
+		telefone
+	else
+		buscaContato nomeBuscado nomes telefones
 
 		
 ----------------------------- MENU ----------------------------------------------------
@@ -150,7 +171,7 @@ printMenu = do
 	putStrLn "4. Excluir Contato."
 	putStrLn "5. Bloquear contato"
 	putStrLn "6. Ordenar contatos"
-	putStrLn "7. Sair"
+	putStrLn "7. altera Contato"
 	putStrLn "Digite sua opção: "
 
 
@@ -158,21 +179,20 @@ printMenu = do
 main = do
 	printMenu
 	opcao <-  getLine
-	 
-	if((read opcao) == 1) then do
+	if(opcao== "1") then do
 		putStrLn "Digite o nome do contato"
  		nome <- getLine
  		putStrLn "Digite o numero do contato"
  		numero <- getLine
 		salvaContato nome numero
 		
-	else if ((read opcao == 2)) then do
+	else if ( opcao == "2") then do
 		listaContatos
 	else if((read opcao == 3)) then do
 		putStrLn "Digite o nome do contato "
 		nome <- getLine
 		exibeContato nome
-	else if ((read opcao == 4)) then do	
+	else if (opcao == "4") then do	
 		(x:xs) <- readFile "nomes.txt"
 		(y:ys) <- readFile "telefones.txt"
 		putStrLn "Digite o nome do contato "
@@ -185,7 +205,7 @@ main = do
 		atualizaArquivo attNomes attNums
 	
 		print "Contato excluido"
-	else if((read opcao) == 5) then do
+	else if(opcao == "5") then do
 		(x:xs) <- readFile "nomes.txt"
 		bloq <- readFile "bloqueados.txt"
 		let nomes = carregaContatos (x:xs) "" []
@@ -195,13 +215,74 @@ main = do
 		a <- removeFile "bloqueados.txt"
 		atualizaBloqueados saida
 		print "pronto"
-	else if((read opcao) == 6) then do
+	else if(opcao == "6") then do
 		(x:xs) <- readFile "nomes.txt"
 		let nomes = carregaContatos (x:xs) "" []
 		(y:ys) <- readFile "telefones.txt" 
 		let telefones = carregaContatos (y:ys) "" []
 		let nomesOrdenado = ordena nomes
 		printaOrdenado nomesOrdenado nomes telefones
+	else if(opcao == "7") then do 
+		
+		putStrLn "qual contato deseja alterar?"
+		
+		nomeContato <- getLine
+		
+		(x:xs) <- readFile "nomes.txt"
+		let nomes = carregaContatos (x:xs) "" []
+		(y:ys) <- readFile "telefones.txt" 
+		let telefones = carregaContatos (y:ys) "" []
+		putStrLn "quais atributos deseja alterar?"
+		putStrLn "1. Nome"
+		putStrLn "2.Telefone"
+		putStrLn "3.Nome e telefone"
+		
+		alternativa <- getLine 
+		
+		if(alternativa == "1")then do 
+			putStrLn "Digite o novo nome:"
+			novoNome <- getLine 
+			let nomesEditados = editaContato nomeContato novoNome nomes
+			print nomesEditados
+			print telefones
+			a <- removeFile "nomes.txt"
+			b <- removeFile "telefones.txt"
+			c <- removeFile "bloqueados.txt"
+			sobrescreve 
+			atualizaArquivo nomesEditados telefones
+			putStrLn "Nome alterado com sucesso"
+		else if(alternativa == "2") then do 
+			putStrLn "Digite o novo Telefone:"
+			novoNumero <- getLine 
+			let numeroContato = buscaNumero nomeContato nomes telefones
+			let telefonesEditados = editaContato numeroContato novoNumero telefones
+	
+			print telefones
+			a <- removeFile "nomes.txt"
+			b <- removeFile "telefones.txt"
+			c <- removeFile "bloqueados.txt"
+			sobrescreve 
+			atualizaArquivo nomes telefonesEditados
+			
+			
+			putStrLn "Telefone alterado com sucesso"
+		else if(alternativa == "3") then do 
+			putStrLn "Digite o novo nome:"
+			novoNome <- getLine 
+			putStrLn "Digite o novo Telefone:"
+			novoNumero <- getLine
+			
+			let numeroContato = buscaNumero nomeContato nomes telefones
+			let telefonesEditados = editaContato numeroContato novoNumero telefones
+			let nomesEditados = editaContato nomeContato novoNome nomes
+			a <- removeFile "nomes.txt"
+			b <- removeFile "telefones.txt"
+			c <- removeFile "bloqueados.txt"
+			sobrescreve 
+			atualizaArquivo nomesEditados telefonesEditados
+			putStrLn "Nome e telefone alterados com sucesso"
+		else do 
+			putStrLn "Alternativa inválida"
 	else
 		print "opcao invalida"
 	main 
