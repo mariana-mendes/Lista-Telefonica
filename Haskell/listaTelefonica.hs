@@ -2,6 +2,7 @@
 import System.IO
 import Data.Char
 import Data.List
+import Data.List.Split
 import System.Directory
 
 ------------------------  ADICIONAR --------------------------------------
@@ -190,6 +191,26 @@ transcreveChamadas :: String -> IO()
 transcreveChamadas lista = do
 	appendFile "chamadas.txt" (lista)
 	
+--------------------------- ADICIONA AOS FAVORITOS ----------------------------------------
+addFavorito nome nomes telefones = do
+	let n = (last(splitOn " " (show (nome `elemIndex` nomes))))
+	let i = read n :: Int
+	add nome (telefones!!i)
+	
+	
+add::String -> String -> IO()
+add nome telefone = do
+	appendFile "favoritos.txt" (nome ++ "|" ++ telefone ++ "|")
+	
+---------------------------- EXIBE FAVORITOS ----------------------------------------------
+exibeFavoritos::[String] -> String
+exibeFavoritos [] = ""
+exibeFavoritos [""] = ""
+exibeFavoritos (f:favs) = do
+	let nome = "Nome: " ++ f ++ "   "
+	let tel = "Telefone: " ++ (head favs) ++ "\n"
+	nome ++ tel ++ exibeFavoritos (tail favs)
+	
 
 
 --------------------------------- MENU ----------------------------------------------------
@@ -207,6 +228,7 @@ printMenu = do
 	putStrLn "8. Chamar Contato"
 	putStrLn "9. Adicionar Grupos"
 	putStrLn "10. Adicionar Contato aos Favoritos"
+	putStrLn "11. Exibe Favoritos"
 	putStrLn "Digite sua opção: "
 
 
@@ -281,7 +303,7 @@ main = do
 		printaOrdenado nomesOrdenado nomes telefones
 		
 		
--------------- EDITAR ------------------		
+-------------- EDITAR ------------------
 	else if(opcao == "7") then do 
 		
 		putStrLn "qual contato deseja alterar?"
@@ -401,13 +423,18 @@ main = do
 		t <- readFile "telefones.txt"
 		let telefones = carregaContatos t "" []
 		if (nome `elem` favoritos) then do
-			print "Esse contato já está nos seus favoritos"
+			print "Esse contato ja esta nos seus favoritos"
 		else if (nome `elem` nomes) then do
-			let tel = telefones !! (read (show (last (show (nome `elemIndex` nomes)))))
+			addFavorito nome nomes telefones
 			putStrLn "Contato adicionado com sucesso"
 		else
-			print "Esse contato não existe"
-	
+			print "Esse contato nao existe"
+	else if (opcao == "11") then do
+		f <- readFile "favoritos.txt"
+		let favoritos = carregaContatos f "" []
+		putStrLn "Favoritos"
+		putStrLn (exibeFavoritos favoritos)
+		
 	else
 		print "Invalida"
 	main 
