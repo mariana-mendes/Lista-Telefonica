@@ -62,21 +62,6 @@ buscaContato nome (x:xs) (y:ys) = do
 	else 
 		buscaContato nome xs ys
 		
-deletaContato :: String -> String -> String -> [String]
-deletaContato nome n t = do
-
-	let nomes = carregaContatos n "" []
-	let telefones = carregaContatos t "" []
-	let resultado = apagaContato nome nomes telefones
-	resultado
-	
-apagaContato :: String -> [String] -> [String] -> [String]
-apagaContato nome [] []  = []
-apagaContato nome (x:xs) (y:ys) = do
-	if (x == nome) then do
-		apagaContato nome xs ys
-	else 
-		 [x] ++ [y] ++ apagaContato nome xs ys 
 		 
 reescreveArquivo :: [String] -> IO()
 reescreveArquivo [] = print "cabou porca"
