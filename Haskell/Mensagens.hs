@@ -1,7 +1,8 @@
 module Mensagens(
-	printOpcoes
-
-
+	printOpcoes,
+	menuEdicao,
+	menuBloqueio,
+	menuGrupo
 ) where
 
 
@@ -19,3 +20,20 @@ printOpcoes = do
 	putStrLn "10. Adicionar Contato aos Favoritos"
 	putStrLn "11. Exibe Favoritos"
 	putStrLn "Digite sua opção: "
+
+menuEdicao = do 
+	putStrLn "Quais atributos deseja alterar?"
+	putStrLn "1. Nome"
+	putStrLn "2.Telefone"
+	putStrLn "3.Nome e telefone"
+
+menuBloqueio = do
+	putStrLn "Deseja bloquear ou desbloquear o contato? "
+	putStrLn "1.Bloquear"
+	putStrLn "2.desbloquear"
+
+menuGrupo = do
+	putStrLn "Deseja:"
+	putStrLn "1. Criar um novo grupo"
+	putStrLn "2. Adicionar um contato a um grupo"
+	putStrLn "3. Remover um grupo"

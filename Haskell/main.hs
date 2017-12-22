@@ -7,19 +7,19 @@ import System.Directory
 import Agenda
 import Mensagens
 
-
 ------------------------ LISTAR  -----------------------------------------
 listaContatos = do
-	nomes <- readFile "nomes.txt"
-	if(length nomes == 0) then do
+	n <- readFile "nomes.txt"
+	t <- readFile "telefones.txt"
+	b <- readFile "bloqueados.txt"	
+	
+	if(length (n) == 0) then do
 		putStrLn "Nenhum contato adicionado"
 	else do	
-		(x:xs) <- readFile "nomes.txt"
-		(y:ys) <- readFile "telefones.txt"
-		(w:ws) <- readFile "bloqueados.txt"
-		let (nome:restoNomes) =  Agenda.modelaArquivo (x:xs) "" []
-		let (telefone:telefones) =  Agenda.modelaArquivo(y:ys) "" []
-		printar (nome:restoNomes) (telefone:telefones) (w:ws)
+
+		let nomes =  Agenda.modelaArquivo n  "" []
+		let telefones =  Agenda.modelaArquivo t "" []
+		printar nomes telefones b
 	
 	
 printar:: [String] -> [String] -> String-> IO()
@@ -142,19 +142,8 @@ chamar n (nome:nomes) (ch:chmds) = do
 	else do
 		let resultado = (read [ch]) +1
 		(show resultado) ++ (chamar n nomes chmds)
-
-
-sobrescreveChamada :: IO()
-sobrescreveChamada = do
-	writeFile "chamadas.txt" ("")
 	
 
-transcreveChamadas :: String -> IO()
-transcreveChamadas lista = do
-	appendFile "chamadas.txt" (lista)
-	
-
-	
 --------------------------- ADICIONA AOS FAVORITOS ----------------------------------------
 addFavorito nome nomes telefones = do
 	let n = (last(splitOn " " (show (nome `elemIndex` nomes))))
@@ -206,12 +195,10 @@ main = do
  		numero <- getLine
  		appendFile "bloqueados.txt" ("0")
  		appendFile "chamadas.txt" ("0")
-		
 		Agenda.salvaContato nome numero
 		
 	else if ( opcao == "2") then do
 		listaContatos
-		
 		
 	else if((read opcao == 3)) then do
 		putStrLn "Digite o nome do contato "
@@ -221,10 +208,14 @@ main = do
 		
 ----------- DELETE ------------------		
 	else if (opcao == "4") then do	
+	
+		---abrir arquivos para atualizar -----
 		(x:xs) <- readFile "nomes.txt"
 		(y:ys) <- readFile "telefones.txt"
 		block <- readFile "bloqueados.txt"
 		call <- readFile "chamadas.txt"
+		
+		
 		putStrLn "Digite o nome do contato "
 		nome <- getLine
 		let nomes = Agenda.modelaArquivo (x:xs) "" []
@@ -236,6 +227,7 @@ main = do
 		c <- removeFile "bloqueados.txt"
 		d<- removeFile "chamadas.txt"
 		sobrescreve 
+		
 		let n  = (take index nomes) ++ (drop (index+1) nomes)
 		let m =  (take index telefones) ++ (drop (index+1) telefones)
 		atualizaArquivo n m
@@ -254,10 +246,9 @@ main = do
 		let nomes =  Agenda.modelaArquivo (x:xs) "" []
 		putStrLn "Digite o nome do contato "
 		nome <- getLine
-		putStrLn "Deseja bloquear ou desbloquear o contato "
-		putStrLn "1.Bloquear"
-		putStrLn "2.desbloquear"
+		Mensagens.menuBloqueio
 		op <- getLine
+		
 		if(op == "1") then do 
 			let saida = bloqueaContato nome nomes bloq "1"
 			a <- removeFile "bloqueados.txt"
@@ -279,19 +270,14 @@ main = do
 		
 -------------- EDITAR ------------------
 	else if(opcao == "7") then do 
-		
-		putStrLn "qual contato deseja alterar?"
-		
+		putStrLn "Qual contato deseja alterar?"
 		nomeContato <- getLine
-		
+	
 		(x:xs) <- readFile "nomes.txt"
 		let nomes =  Agenda.modelaArquivo (x:xs) "" []
 		(y:ys) <- readFile "telefones.txt" 
 		let telefones =  Agenda.modelaArquivo (y:ys) "" []
-		putStrLn "quais atributos deseja alterar?"
-		putStrLn "1. Nome"
-		putStrLn "2.Telefone"
-		putStrLn "3.Nome e telefone"
+		Mensagens.menuEdicao
 		alternativa <- getLine 
 		
 ---------------------- NOME -----------------
@@ -356,25 +342,18 @@ main = do
 		putStrLn "Digite o nome do contato"
 		nome <- getLine
 		let novasChamadas = chamar nome loadNomes chamadas
-
+		
 		
 		a <- removeFile "chamadas.txt"
-		sobrescreveChamada
-		transcreveChamadas novasChamadas
+		writeFile "chamadas.txt" (novasChamadas)
 		
 		n<-readFile "chamadas.txt"
 		verificaChamada nome loadNomes telefones n
-		--a <- removeFile "chamadas.txt"
-		--sobrescreveChamada
-		--transcreveChamadas novasChamadas
 		print "Chamada Realizada"
 		
 	
 	else if(opcao == "9") then do
-		putStrLn "Deseja:"
-		putStrLn "1. Criar um novo grupo"
-		putStrLn "2. Adicionar um contato a um grupo"
-		putStrLn "3. Remover um grupo"
+		Mensagens.menuGrupo
 			
 		opcao <- getLine
 		if (opcao == "1") then do
