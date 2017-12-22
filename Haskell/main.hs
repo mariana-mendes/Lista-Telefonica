@@ -73,15 +73,6 @@ bloqueaContato nome (x:nomes) (w:bloqueados) op
 
 ----------------------------- DELETE ------------------------------------------
 
-------- nomes atualizados
-atualizaLista :: String -> [String] -> [String]
-atualizaLista n [""] = []
-atualizaLista n (nome:nomes) = do
-	if(n /= nome) then do
-		[nome] ++ atualizaLista n nomes
-	else 
-		atualizaLista n nomes
-
 getIndice :: String -> [String] -> Int ->  Int
 getIndice n [] num= 0
 getIndice n (nome:nomes) num = do
@@ -89,15 +80,6 @@ getIndice n (nome:nomes) num = do
 		num
 	else do
 		getIndice n nomes num+1
-
-------numeros atualizados
-atualiza :: String -> [String]-> [String] -> [String] 	
-atualiza n [""] [""] = []
-atualiza n (nome:nomes) (num:nums) = do
-	if(n /= nome) then do
-		[num] ++ atualiza n nomes nums
-	else 
-		atualiza n nomes nums
 
 sobrescreve :: IO()
 sobrescreve  = do
