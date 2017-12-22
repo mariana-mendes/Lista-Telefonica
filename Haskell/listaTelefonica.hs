@@ -9,7 +9,7 @@ import System.Directory
 salvaContato :: String -> String -> IO ()
 salvaContato nome numero = do
 			appendFile "nomes.txt" (nome ++ "|")
-			appendFile "bloqueados.txt" ("0")
+			
 			appendFile "telefones.txt" (numero ++ "|")
 
 
@@ -174,6 +174,7 @@ buscaNumero nomeBuscado (nome:nomes) (telefone:telefones) = do
 ----------------------------- CHAMAR CONTATO -------------------------------------------------
 chamar :: String -> [String] -> String -> String
 chamar n [] "" = ""
+
 chamar n (nome:nomes) (ch:chmds) = do
 	if(n /= nome) then do
 		 [ch] ++ chamar n nomes chmds
@@ -191,6 +192,8 @@ transcreveChamadas :: String -> IO()
 transcreveChamadas lista = do
 	appendFile "chamadas.txt" (lista)
 	
+
+	
 --------------------------- ADICIONA AOS FAVORITOS ----------------------------------------
 addFavorito nome nomes telefones = do
 	let n = (last(splitOn " " (show (nome `elemIndex` nomes))))
@@ -201,7 +204,23 @@ addFavorito nome nomes telefones = do
 add::String -> String -> IO()
 add nome telefone = do
 	appendFile "favoritos.txt" (nome ++ "|" ++ telefone ++ "|")
-	
+
+verificaChamada :: [String] -> [String] -> String -> IO()
+verificaChamada [""] [""] "" = putStrLn ""
+verificaChamada (n:nomes) (t:telefones) "" = putStrLn ""
+verificaChamada  [""] [""] (ch:chamadas) = putStrLn ""
+
+verificaChamada (n:nomes) (t:telefones) (ch:chamadas) = do
+	let resultado = (read [ch])
+	if(resultado == 3) then do	
+		putStrLn "Seu contato se tornou um favorito!"
+		add n t	
+	else do
+		putStrLn ""
+		verificaChamada nomes telefones chamadas
+
+
+		
 ---------------------------- EXIBE FAVORITOS ----------------------------------------------
 exibeFavoritos::[String] -> String
 exibeFavoritos [] = ""
@@ -241,7 +260,9 @@ main = do
  		nome <- getLine
  		putStrLn "Digite o numero do contato"
  		numero <- getLine
- 		appendFile "chamadas.txt" ("0")
+ 		appendFile "bloqueados.txt" ("0")
+		appendFile "chamadas.txt" ("0")
+		
 		salvaContato nome numero
 		
 	else if ( opcao == "2") then do
@@ -320,7 +341,7 @@ main = do
 		putStrLn "3.Nome e telefone"
 		alternativa <- getLine 
 		
-		------------ NOME -----------------
+---------------------- NOME -----------------
 		
 		if(alternativa == "1")then do 
 			putStrLn "Digite o novo nome:"
@@ -335,7 +356,7 @@ main = do
 			atualizaArquivo nomesEditados telefones
 			putStrLn "Nome alterado com sucesso"
 			
-		---------- TELEFONE -----------------
+-------------- TELEFONE -----------------
 			
 		else if(alternativa == "2") then do 
 			putStrLn "Digite o novo Telefone:"
@@ -375,17 +396,26 @@ main = do
 	else if(opcao == "8") then do
 		contatos <- readFile "nomes.txt"
 		chamadas <- readFile "chamadas.txt"
+		t <- readFile "telefones.txt"
+		let telefones = carregaContatos t "" []
 		let loadNomes = carregaContatos contatos  "" []
 		
 		putStrLn "Digite o nome do contato"
 		nome <- getLine
 		let novasChamadas = chamar nome loadNomes chamadas
+
 		
 		a <- removeFile "chamadas.txt"
 		sobrescreveChamada
 		transcreveChamadas novasChamadas
 		
-		print "a"
+		n<-readFile "chamadas.txt"
+		verificaChamada loadNomes telefones n
+		--a <- removeFile "chamadas.txt"
+		--sobrescreveChamada
+		--transcreveChamadas novasChamadas
+		print "Chamada Realizada"
+		
 	
 	else if(opcao == "9") then do
 		putStrLn "Deseja:"
