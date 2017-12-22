@@ -9,7 +9,7 @@ import System.Directory
 salvaContato :: String -> String -> IO ()
 salvaContato nome numero = do
 			appendFile "nomes.txt" (nome ++ "|")
-			
+			appendFile "bloqueados.txt" ("0")
 			appendFile "telefones.txt" (numero ++ "|")
 
 
@@ -29,6 +29,8 @@ listaContatos = do
 	
 printar:: [String] -> [String] -> String-> IO()
 printar [""] [""] x = putStrLn "fim"
+printar	lista [""] x = putStrLn "fim"
+printar [""] l x = putStrLn "fim"
 printar (nome:restoNomes) (telefone:restoTelefones)(bloq:restobloq) = do 
 	if([bloq] == "1") then do
 		printar restoNomes restoTelefones restobloq
@@ -173,8 +175,9 @@ buscaNumero nomeBuscado (nome:nomes) (telefone:telefones) = do
 
 ----------------------------- CHAMAR CONTATO -------------------------------------------------
 chamar :: String -> [String] -> String -> String
-chamar n [] "" = ""
-
+chamar n [""] "" = ""
+chamar n lista "" = ""
+chamar n [""] chms = ""
 chamar n (nome:nomes) (ch:chmds) = do
 	if(n /= nome) then do
 		 [ch] ++ chamar n nomes chmds
@@ -205,19 +208,19 @@ add::String -> String -> IO()
 add nome telefone = do
 	appendFile "favoritos.txt" (nome ++ "|" ++ telefone ++ "|")
 
-verificaChamada :: [String] -> [String] -> String -> IO()
-verificaChamada [""] [""] "" = putStrLn ""
-verificaChamada (n:nomes) (t:telefones) "" = putStrLn ""
-verificaChamada  [""] [""] (ch:chamadas) = putStrLn ""
+verificaChamada :: String -> [String] -> [String] -> String -> IO()
+verificaChamada  nome [""] [""] "" = putStrLn ""
+verificaChamada nome (n:nomes) (t:telefones) "" = putStrLn ""
+verificaChamada  nome [""] [""] (ch:chamadas) = putStrLn ""
 
-verificaChamada (n:nomes) (t:telefones) (ch:chamadas) = do
+verificaChamada nome (n:nomes) (t:telefones) (ch:chamadas) = do
 	let resultado = (read [ch])
-	if(resultado == 3) then do	
+	if(resultado == 3 && nome == n) then do	
 		putStrLn "Seu contato se tornou um favorito!"
 		add n t	
 	else do
 		putStrLn ""
-		verificaChamada nomes telefones chamadas
+		verificaChamada nome nomes telefones chamadas
 
 
 		
@@ -260,8 +263,7 @@ main = do
  		nome <- getLine
  		putStrLn "Digite o numero do contato"
  		numero <- getLine
- 		appendFile "bloqueados.txt" ("0")
-		appendFile "chamadas.txt" ("0")
+ 		appendFile "chamadas.txt" ("0")
 		
 		salvaContato nome numero
 		
@@ -410,7 +412,7 @@ main = do
 		transcreveChamadas novasChamadas
 		
 		n<-readFile "chamadas.txt"
-		verificaChamada loadNomes telefones n
+		verificaChamada nome loadNomes telefones n
 		--a <- removeFile "chamadas.txt"
 		--sobrescreveChamada
 		--transcreveChamadas novasChamadas
