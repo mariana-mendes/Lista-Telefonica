@@ -33,30 +33,6 @@ printar (nome:restoNomes) (telefone:restoTelefones)(bloq:restobloq) = do
 		putStrLn ("nome: " ++ nome)
 		putStrLn ("telefone: " ++ telefone)
 		printar restoNomes restoTelefones restobloq
-	 
-	
-
-
----------------- EXIBIR CONTATO ESPECIFICO ----------------------------- 
-
-exibeContato :: String -> IO()
-exibeContato "" = print "Inexistente"
-exibeContato nome = do
-	(x:xs) <- readFile "nomes.txt"
-	(y:ys) <- readFile "telefones.txt"
-	let nomes =  Agenda.modelaArquivo (x:xs) "" []
-	let telefones =  Agenda.modelaArquivo (y:ys) "" []
-	let resultado = buscaContato nome nomes telefones
-	print resultado
-	
-
-buscaContato :: String -> [String] -> [String] -> String
-buscaContato nome [] [] = ""
-buscaContato nome (x:xs) (y:ys) = do
-	if(x == nome) then do
-		"Nome :" ++ x ++ " " ++ "Telefone: "++ y
-	else 
-		buscaContato nome xs ys
 	
 ------------------------------ BLOCK ---------------------------------------
 
@@ -100,8 +76,6 @@ atualizaArquivo (x:xs) (y:ys) = do
 atualizaBloqueados:: String -> IO()
 atualizaBloqueados nova = writeFile "bloqueados.txt" (nova)
 
-
-
 ---------------------------------GRUPOS------------------------------------------------------
 
 criarGrupo :: String -> IO()
@@ -110,27 +84,6 @@ criarGrupo nome = writeFile (nome ++ ".txt")("")
 adicionarContatoAGrupo :: String -> String -> IO()
 adicionarContatoAGrupo nomeGrupo nomeContato = appendFile (nomeGrupo ++ ".txt") (nomeContato ++ "|")
 	
-	
------------------------------ EDITA CONTATO ----------------------------------------------------
-------- nomes atualizados
-editaContato :: String -> String ->  [String] -> [String]
-editaContato dadoAntigo dadoNovo [""] = []
-editaContato dadoAntigo dadoNovo (dado:dados) = do
-	if(dadoAntigo /= dado) then do
-		[dado] ++ editaContato dadoAntigo dadoNovo dados
-	else 
-		[dadoNovo] ++ editaContato dadoAntigo dadoNovo dados
-
-buscaNumero:: String -> [String] -> [String] -> String
-buscaNumero x [] [] = "|"
-buscaNumero nomeBuscado (nome:nomes) (telefone:telefones) = do
-	if(nome == nomeBuscado) then do 
-		telefone
-	else
-		buscaContato nomeBuscado nomes telefones
-
-
-
 ----------------------------- CHAMAR CONTATO -------------------------------------------------
 chamar :: String -> [String] -> String -> String
 chamar n [""] "" = ""
@@ -170,7 +123,24 @@ verificaChamada nome (n:nomes) (t:telefones) (ch:chamadas) = do
 		verificaChamada nome nomes telefones chamadas
 
 
+
+----------------------------- REMOVE DOS FAVORITOS ----------------------------------------
+
+removeFavorito:: String -> [String] -> [String]
+removeFavorito nome [] = []
+removeFavorito nome favoritos = do
+	let n = (last(splitOn " " (show (nome `elemIndex` favoritos))))
+	let i = read n :: Int
+	if (i> 0) then do
+		take (i-1) favoritos ++ drop (i+1) favoritos
+	else do
+		drop 2 favoritos
 		
+reescreveFavoritos::[String] -> String
+reescreveFavoritos [] = ""
+reescreveFavoritos (f:fs) = do
+	f ++ "|" ++ reescreveFavoritos fs
+	
 ---------------------------- EXIBE FAVORITOS ----------------------------------------------
 exibeFavoritos::[String] -> String
 exibeFavoritos [] = ""
@@ -180,10 +150,6 @@ exibeFavoritos (f:favs) = do
 	let tel = "Telefone: " ++ (head favs) ++ "\n"
 	nome ++ tel ++ exibeFavoritos (tail favs)
 	
-
-
-
-
 	
 main = do
 	Mensagens.printOpcoes
@@ -203,7 +169,16 @@ main = do
 	else if((read opcao == 3)) then do
 		putStrLn "Digite o nome do contato "
 		nome <- getLine
-		exibeContato nome
+		(x:xs) <- readFile "nomes.txt"
+		(y:ys) <- readFile "telefones.txt"
+		let nomes =  Agenda.modelaArquivo (x:xs) "" []
+		let telefones =  Agenda.modelaArquivo (y:ys) "" []
+		let index = getIndice nome nomes 0
+		putStr "Nome: "
+		putStrLn (nomes!!index)
+		putStr "Telefone: "
+		putStrLn (telefones!!index)
+	
 		
 		
 ----------- DELETE ------------------		
@@ -279,20 +254,18 @@ main = do
 		let telefones =  Agenda.modelaArquivo (y:ys) "" []
 		Mensagens.menuEdicao
 		alternativa <- getLine 
-		
+		let index = getIndice nomeContato nomes  0
 ---------------------- NOME -----------------
 		
 		if(alternativa == "1")then do 
 			putStrLn "Digite o novo nome:"
 			novoNome <- getLine 
-			let nomesEditados = editaContato nomeContato novoNome nomes
-			print nomesEditados
-			print telefones
+			
+			let novosContatos = (take index nomes) ++ [novoNome] ++(drop (index+1) nomes)
 			a <- removeFile "nomes.txt"
-			b <- removeFile "telefones.txt"
-			c <- removeFile "bloqueados.txt"
+		
 			sobrescreve 
-			atualizaArquivo nomesEditados telefones
+			atualizaArquivo novosContatos telefones
 			putStrLn "Nome alterado com sucesso"
 			
 -------------- TELEFONE -----------------
@@ -300,15 +273,11 @@ main = do
 		else if(alternativa == "2") then do 
 			putStrLn "Digite o novo Telefone:"
 			novoNumero <- getLine 
-			let numeroContato = buscaNumero nomeContato nomes telefones
-			let telefonesEditados = editaContato numeroContato novoNumero telefones
-	
-			print telefones
-			a <- removeFile "nomes.txt"
+			let novosNumeros =  (take index telefones) ++ [novoNumero] ++(drop (index+1) telefones)
+
 			b <- removeFile "telefones.txt"
-			c <- removeFile "bloqueados.txt"
 			sobrescreve 
-			atualizaArquivo nomes telefonesEditados
+			atualizaArquivo nomes novosNumeros
 			putStrLn "Telefone alterado com sucesso"
 			
 		---------- NOME E TELEFONE --------------	
@@ -319,14 +288,14 @@ main = do
 			putStrLn "Digite o novo Telefone:"
 			novoNumero <- getLine
 			
-			let numeroContato = buscaNumero nomeContato nomes telefones
-			let telefonesEditados = editaContato numeroContato novoNumero telefones
-			let nomesEditados = editaContato nomeContato novoNome nomes
+			let novosNumeros =  (take index telefones) ++ [novoNumero] ++(drop (index+1) telefones)
+			let novosContatos = (take index nomes) ++ [novoNome] ++(drop (index+1) nomes)
+		 
 			a <- removeFile "nomes.txt"
 			b <- removeFile "telefones.txt"
-			c <- removeFile "bloqueados.txt"
+		
 			sobrescreve 
-			atualizaArquivo nomesEditados telefonesEditados
+			atualizaArquivo novosContatos novosNumeros
 			putStrLn "Nome e telefone alterados com sucesso"
 		else do 
 			putStrLn "Alternativa inválida"
@@ -397,6 +366,19 @@ main = do
 		putStrLn "Favoritos"
 		putStrLn (exibeFavoritos favoritos)
 		
+		else if (opcao == "12") then do
+		putStrLn "Digite o nome do contato"
+		nome <- getLine
+		favs <- readFile "favoritos.txt"
+		let favoritos = Agenda.modelaArquivo favs "" []
+		if (nome `elem` favoritos) then do
+			let novos = removeFavorito nome favoritos
+			let t = length (reescreveFavoritos novos)
+			writeFile "favoritos.txt" (take (t-1) (reescreveFavoritos novos))
+			putStrLn "Favorito removido com sucesso"
+		else 
+			print "Esse contato nao esta em seus favoritos"
+			
 	else
 		print "Invalida"
 	main 

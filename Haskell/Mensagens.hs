@@ -19,6 +19,7 @@ printOpcoes = do
 	putStrLn "9. Adicionar Grupos"
 	putStrLn "10. Adicionar Contato aos Favoritos"
 	putStrLn "11. Exibe Favoritos"
+	putStrLn "12. Excluir Contato dos Favoritos"
 	putStrLn "Digite sua opção: "
 
 menuEdicao = do 
