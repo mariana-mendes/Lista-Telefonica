@@ -1,0 +1,10 @@
+rm telefones.txt
+touch telefones.txt
+rm chamadas.txt
+touch chamadas.txt
+rm nomes.txt
+touch nomes.txt
+rm bloqueados.txt
+touch bloqueados.txt
+rm favoritos.txt
+touch favoritos.txt
